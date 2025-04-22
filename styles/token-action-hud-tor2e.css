@@ -1,0 +1,23 @@
+.equipment .tah-button-image, .armour .tah-button-image, .weapon .tah-button-image, .rest .tah-button-image, .stateOfHealth .tah-button-image, .stance .tah-button-image {
+    height: 20px !important;
+}
+
+.hud-info {
+    width: max-content;
+}
+
+.tah-info2 {
+    text-shadow: none;
+}
+
+.tah-info2 {
+    color: #2e9c36 !important;
+}
+
+.tah-info1 {
+    color: #f3ab01 !important;
+}
+
+.tah-info3 {
+    color: #0279f1 !important;
+}

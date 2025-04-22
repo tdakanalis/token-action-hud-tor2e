@@ -1,0 +1,38 @@
+{
+  "tokenActionHud": {
+    "tor2e": {
+      "combat": {
+        "stance": {
+          "forward": {
+            "bonus": "Your attacks: +1d; Enemy close attacks vs you: +1d",
+            "task": "Intimidate Foe"
+          },
+          "open": {
+            "bonus": "No bonuses or penalties.",
+            "task": "Rally Comrades"
+          },
+          "defensive": {
+            "bonus": "Enemy close attacks vs you: -1d; Your attacks: -1d per engaged foe",
+            "task": "Protect Companion"
+          },
+          "rearward": {
+            "bonus": "Ranged only; Only targeted by ranged attackers",
+            "task": "Prepare Shot"
+          },
+          "skirmish": {
+            "bonus": "Ranged only; Your ranged attacks: -1d; Enemy melee attacks vs you: -1d",
+            "task": "Gain Ground"
+          }
+        }
+      },
+      "health": {
+        "status": {
+          "weary": "1–3 on Success Dice count as 0",
+          "miserable": "Sauron Eye counts as auto-fail",
+          "poisoned": "Cannot rest; roll for Endurance loss daily.",
+          "wounded": "Risk knockout; recover 0 Endurance on short rest; recover STRENGTH Endurance on prolonged rest."
+        }
+      }
+    }
+  }
+}
