@@ -1,6 +1,11 @@
 {
   "tokenActionHud": {
     "tor2e": {
+      "groups": {
+        "stats": "Stats",
+        "advancement": "Advancement",
+        "stances": "Stances"
+      },
       "combat": {
         "stance": {
           "forward": {

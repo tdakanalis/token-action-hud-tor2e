@@ -16,11 +16,11 @@ export function generateDiamonds(count) {
 
 export function getGroup(coreModule) {
     return {
-        stats: { id: 'stats', name: 'Stats', type: 'system', settings: {image: "systems/tor2e/assets/images/icons/actors/character.webp"} },
+        stats: { id: 'stats', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.groups.stats'), type: 'system', settings: {image: "systems/tor2e/assets/images/icons/actors/character.webp"} },
         attributes: { id: 'attributes', name: coreModule.api.Utils.i18n('tor2e.actors.sections.attributes'), type: 'system' },
         stature: { id: 'stature', name: coreModule.api.Utils.i18n('tor2e.actors.sections.heroicStature'), type: 'system' },
         resources: { id: 'resources', name: coreModule.api.Utils.i18n('tor2e.actors.sections.resources'), type: 'system' },
-        advancement: { id: 'advancement', name: 'Advancement', type: 'system' },
+        advancement: { id: 'advancement', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.groups.advancement'), type: 'system' },
 
         skills: { id: 'skills', name: coreModule.api.Utils.i18n('tor2e.actors.sections.commonSkills'), type: 'system',  settings: {image: "systems/tor2e/assets/images/icons/skill.png"} },
         strength: { id: 'strength', name: coreModule.api.Utils.i18n('tor2e.stats.strength'), type: 'system' },
@@ -28,7 +28,7 @@ export function getGroup(coreModule) {
         wits: { id: 'wits', name: coreModule.api.Utils.i18n('tor2e.stats.wits'), type: 'system' },
 
         combat: { id: 'combat', name: coreModule.api.Utils.i18n('tor2e.actors.sections.combat'), type: 'system', settings: {image: "systems/tor2e/assets/images/icons/weapons/dagger.png"} },
-        stances: { id: 'stances', name: 'Stances', type: 'system' },
+        stances: { id: 'stances', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.groups.stances'), type: 'system' },
         weapons: {id: 'weapons', name: coreModule.api.Utils.i18n('tor2e.items.common.equipped') + " " + coreModule.api.Utils.i18n('tor2e.items.weapons.title'), type: 'system' },
         armours: {id: 'armours', name: coreModule.api.Utils.i18n('tor2e.items.common.equipped') + " " + coreModule.api.Utils.i18n('tor2e.items.armours.title'), type: 'system' },
         combatProficiences: { id: 'combatProficiences', name: coreModule.api.Utils.i18n('tor2e.actors.sections.combatProficiencies'), type: 'system' },

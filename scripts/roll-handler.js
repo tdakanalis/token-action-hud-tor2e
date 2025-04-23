@@ -50,7 +50,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         _rollStature(typeActor, attr) {
             if(typeActor === 'character') {
                 if (STATS.STATURE.includes(attr)) {
-                    game.tor2e.macro.utility.rollHeroicStatureMacro(capitalizeFirstLetter(attr));
+                    game.tor2e.macro.utility.rollHeroicStatureMacro(coreModule.api.Utils.i18n('tor2e.statureStats.' + attr));
                 }
             }
         }
@@ -63,7 +63,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     skill.favoured = {value: false};
                     return skill;
                 }
-                game.tor2e.macro.utility._executeSkillMacro(this.actor, capitalizeFirstLetter(proficiency), true, getProficiencyFrom, 0)
+                game.tor2e.macro.utility._executeSkillMacro(this.actor,
+                    coreModule.api.Utils.i18n('tor2e.combatProficiencies.' + proficiency), true, getProficiencyFrom, 0)
             }
         }
 
@@ -100,7 +101,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         _rollSkill(typeActor, attr, skill) {
             if(typeActor === 'character') {
-                game.tor2e.macro.utility.rollSkillMacro(capitalizeFirstLetter(skill));
+                game.tor2e.macro.utility.rollSkillMacro(coreModule.api.Utils.i18n('tor2e.commonSkills.' + skill));
             }
         }
 

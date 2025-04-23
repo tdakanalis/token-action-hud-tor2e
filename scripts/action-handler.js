@@ -457,6 +457,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadTravel(community) {
             if (this.actor.type === 'character') {
                 const travel = community.system.travel;
+                const labels = {
+                    "hunters": "hunting",
+                    "guide": "travel",
+                    "scouts": "explore",
+                    "lookouts": "awareness",
+                };
                 Object.keys(travel).forEach(role => {
                     const players = role === 'guide' ? [travel[role]] : travel[role];
                     const playerNames = players.map(p => p?.name).join(', ');
@@ -466,7 +472,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     this.addActions([{
                         id: role,
                         cssClass: active ? "travelRole active" : "travelRole",
-                        img: 'systems/tor2e/assets/images/icons/skills/skill-' + skill + '.webp',
+                        img: 'systems/tor2e/assets/images/icons/skills/skill-' + labels[role] + '.webp',
                         name: coreModule.api.Utils.i18n('tor2e.travel.roles.' + role + '.label'),
                         encodedValue: ['community','character', 'travel', role].join(this.delimiter),
                         info1: { class: "hud-info", text:  skill},
