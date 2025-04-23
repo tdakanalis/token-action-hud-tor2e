@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.0.1...v1.0.2) (2025-04-23)
+
+
+### Bug Fixes
+
+* **readme:** Fix README and LICENSE files ([3ff4578](https://github.com/tdakanalis/token-action-hud-tor2e/commit/3ff4578df1a22f1e21dd4c1080839e9239f3c513))
+
 ## [1.0.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.0.0...v1.0.1) (2025-04-23)
 
 
