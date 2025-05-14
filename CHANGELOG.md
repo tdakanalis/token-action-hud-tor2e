@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.0.2...v1.1.0) (2025-05-14)
+
+
+### Features
+
+* **adversaries:** Add support for adversaries, lore characters and NPCs. ([c374755](https://github.com/tdakanalis/token-action-hud-tor2e/commit/c374755a31487ab8000afc3ff035d26ace48da75))
+* **v13:** Add support for Foundry VTT v13 ([2e2f477](https://github.com/tdakanalis/token-action-hud-tor2e/commit/2e2f477c659b27a0bcd8e2b11133ce70a8450dff))
+
 ## [1.0.2](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.0.1...v1.0.2) (2025-04-23)
 
 
