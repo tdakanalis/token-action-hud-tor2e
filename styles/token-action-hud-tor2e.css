@@ -1,7 +1,3 @@
-.equipment .tah-button-image, .armour .tah-button-image, .weapon .tah-button-image, .rest .tah-button-image, .stateOfHealth .tah-button-image, .stance .tah-button-image {
-    height: 20px !important;
-}
-
 .hud-info {
     width: max-content;
 }

@@ -1,6 +1,6 @@
 import { TOR2EActionHandler } from './action-handler.js'
 import { TOR2ERollHandler } from './roll-handler.js'
-import {getGroup} from "./constants.js";
+import {getGroup, getSettings, MODULE_ID} from "./constants.js";
 
 export let TOR2ESystemManager = null
 
@@ -80,9 +80,11 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                         groups: [
                             { ...groups.traits, nestId: 'traits' },
                             { ...groups.features, nestId: 'traits_features' },
+                            { ...groups.occupation, nestId: 'traits_occupation' },
                             { ...groups.flaws, nestId: 'traits_flaws' },
                             { ...groups.rewards, nestId: 'traits_rewards' },
-                            { ...groups.virtues, nestId: 'traits_virtues' }
+                            { ...groups.virtues, nestId: 'traits_virtues' },
+                            { ...groups.fell, nestId: 'traits_fell' },
                         ]
                     },
                     {
@@ -94,6 +96,7 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                             { ...groups.equipment, nestId: 'misc_equipment' },
                             { ...groups.rest, nestId: 'misc_rest' },
                             { ...groups.health, nestId: 'misc_health' },
+                            { ...groups.effects, nestId: 'misc_effects' },
                         ]
                     },
                     {
@@ -109,13 +112,16 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                 ],
                 groups: groupsArray
             }
-
-            //game.tokenActionHud.defaults = DEFAULTS
             return DEFAULTS
         }
     }
 
-    const module = game.modules.get('token-action-hud-tor2e');
+    const settings = getSettings(coreModule);
+    for (const [key, value] of Object.entries(settings)) {
+        game.settings.register(MODULE_ID, key, value);
+    }
+
+    const module = game.modules.get(MODULE_ID);
     module.api = {
         requiredCoreModuleVersion: '2.0',
         SystemManager: TOR2ESystemManager

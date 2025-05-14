@@ -1,6 +1,20 @@
 {
   "tokenActionHud": {
     "tor2e": {
+      "settings": {
+        "displayPlayerHealthEvents": {
+          "title": "Allow players to apply health statuses",
+          "description": "Enable this option to allow players to apply health statuses such as Weary, Miserable, Wounded, and Poisoned to their characters."
+        },
+        "displayPlayerEffects": {
+          "title": "Allow players to apply effects",
+          "description": "Enable this option to allow players to apply effect statuses such as Dead, Unconscious, and Invisible to their characters."
+        },
+        "addOverlayOnEffects": {
+          "title": "Enable token overlay for effect statuses",
+          "description": "Enable this option to apply a token overlay when applying effect statuses such as Dead, Unconscious, and Invisible."
+        }
+      },
       "groups": {
         "stats": "Stats",
         "advancement": "Advancement",

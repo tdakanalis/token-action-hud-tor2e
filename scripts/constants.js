@@ -1,3 +1,5 @@
+export const MODULE_ID = 'token-action-hud-tor2e';
+
 export function capitalizeFirstLetter(string) {
     return string[0].toUpperCase() + string.slice(1);
 }
@@ -39,16 +41,48 @@ export function getGroup(coreModule) {
         flaws: { id: 'flaws', name: coreModule.api.Utils.i18n('tor2e.actors.traits.flaws'), type: 'system' },
         rewards: { id: 'rewards', name: coreModule.api.Utils.i18n('tor2e.actors.sections.rewards'), type: 'system' },
         virtues: { id: 'virtues', name: coreModule.api.Utils.i18n('tor2e.actors.sections.virtues'), type: 'system' },
+        fell: { id: 'fell', name: coreModule.api.Utils.i18n('tor2e.actors.fellAbilities.title'), type: 'system' },
 
         misc: { id: 'misc', name: coreModule.api.Utils.i18n('tor2e.items.miscellaneous.title'), type: 'system',  settings: {image: "systems/tor2e/assets/images/icons/gear.png"} },
         equipment: { id: 'equipment', name: coreModule.api.Utils.i18n('tor2e.actors.sections.equipment-gear'), type: 'system' },
         rest: { id: 'rest', name: coreModule.api.Utils.i18n('tor2e.actors.stats.rest'), type: 'system' },
         health: { id: 'health', name: coreModule.api.Utils.i18n('tor2e.actors.stats.health'), type: 'system' },
+        effects: { id: 'effects', name: coreModule.api.Utils.i18n('tor2e.actors.sections.effects'), type: 'system' },
+        occupation: { id: 'occupation', name: coreModule.api.Utils.i18n('tor2e.actors.sections.occupation'), type: 'system' },
 
         community: { id: 'community', name: coreModule.api.Utils.i18n('tor2e.actors.types.community.title'), type: 'system',  settings: {image: "systems/tor2e/assets/images/icons/actors/community.webp"} },
         travel: { id: 'travel', name: coreModule.api.Utils.i18n('tor2e.actors.sections.travel'), type: 'system' },
         fellowship: { id: 'fellowship', name: coreModule.api.Utils.i18n('tor2e.actors.stats.fellowshipPoints'), type: 'system' },
     };
+}
+
+export function getSettings(coreModule) {
+    return {
+        displayPlayerHealthEvents: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerHealthEvents.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerHealthEvents.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        },
+        displayPlayerEffects: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerEffects.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerEffects.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        },
+        addOverlayOnEffects: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        }
+    }
 }
 
 export const SKILLS = {
