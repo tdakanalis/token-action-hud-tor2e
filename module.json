@@ -4,9 +4,9 @@
   "description": "Provides support for the TOR2E game system with Token Action HUD Core",
   "version": "1.0.2",
   "compatibility": {
-    "minimum": "11",
-    "verified": "13.331",
-    "maximum": ""
+    "minimum": "12",
+    "verified": "13",
+    "maximum": "13"
   },
   "authors": [
     {
