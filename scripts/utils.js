@@ -4,3 +4,19 @@ export function getTargetedTokens() {
     }
     return game.user.targets.map(token => token.id);
 }
+
+export function capitalizeFirstLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
+export function generateDiamonds(count) {
+    const total = 6;
+    const full = '◆';
+    const empty = '◇';
+
+    if (count < 0 || count > total) {
+        throw new Error('Count must be between 0 and 6');
+    }
+
+    return full.repeat(count) + empty.repeat(total - count);
+}

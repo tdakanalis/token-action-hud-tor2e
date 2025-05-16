@@ -11,16 +11,26 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async handleActionClick(event, encodedValue) {
             const decoded = encodedValue.split("|");
 
-            console.debug(encodedValue);
+            console.debug(event, encodedValue);
 
             let typeAction = decoded[0]
             let typeActor = decoded[1]
             let macroType = decoded[2]
             let macroSubType = ''
+
             if(decoded.length > 3) {
                 macroSubType = decoded[3]
             }
+
+            if (this.isRightClick) {
+                this._showItem(macroSubType);
+                return;
+            }
+
             switch(typeAction) {
+                case 'armour':
+                    this._showItem(typeActor, macroType, macroSubType);
+                    break;
                 case 'skill':
                     this._rollSkill(typeActor, macroType, macroSubType)
                     break;
@@ -34,7 +44,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     this._rollSpecial(typeActor, macroType, macroSubType)
                     break;
                 case 'weapon':
-                    this._useWeapon(typeActor, macroType)
+                    this._useWeapon(typeActor, macroType, macroSubType)
                     break;
                 case 'health':
                     this._setHealthStatus(typeActor, macroType)
@@ -54,6 +64,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
+        _showItem(itemId) {
+            if (this.isRenderItem()) {
+                this.renderItem(this.actor, itemId)
+            }
+        }
+
         _rollStature(typeActor, attr) {
             if(typeActor === 'character') {
                 if (STATS.STATURE.includes(attr)) {
@@ -62,7 +78,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        _rollProficiency(typeActor, proficiency, event) {
+        _rollProficiency(typeActor, proficiency) {
             if(typeActor === 'character') {
                 function getProficiencyFrom(_skillId, actor = game.tor2e.macro.utility._getActorFrom({})) {
                     let skills = actor.extendedData?.getCombatProficiencies();

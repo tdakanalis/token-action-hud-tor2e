@@ -1,7 +1,7 @@
-import {capitalizeFirstLetter, generateDiamonds, getGroup, SKILLS} from "./constants.js";
+import {getTargetedTokens, capitalizeFirstLetter, generateDiamonds} from "./utils.js";
+import {getGroup, SKILLS} from "./constants.js";
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
-import {getTargetedTokens} from "./utils.js";
 
 export let TOR2EActionHandler = null
 
@@ -317,7 +317,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         name: weapon.name,
                         img: weapon.img,
                         tooltip: weapon?.system?.description?.value,
-                        encodedValue: ['weapon', this.actor.type, weapon.name].join(this.delimiter),
+                        encodedValue: ['weapon', this.actor.type, weapon.name, weapon.id].join(this.delimiter),
                         info1: {class: "hud-info", text: generateDiamonds(proficiency.value)},
                         info2: {class: "hud-info", text: damage},
                         info3: {class: "hud-info", text: injury + (proficiency?.favoured?.value ?
@@ -344,7 +344,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         cssClass: "armour",
                         img: armour.img,
                         description: armour.name,
-                        encodedValue: ['armour', 'character', armour.name].join(this.delimiter),
+                        encodedValue: ['armour', 'character', armour.name, armour.id].join(this.delimiter),
                         info1: {text: protection},
                     }], this.GROUP.armours)
                 })
