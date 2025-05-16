@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.1.0...v1.2.0) (2025-05-16)
+
+
+### Features
+
+* **combat:** Add GM utilities to add/remove combatants and target/untarget tokens ([34d8400](https://github.com/tdakanalis/token-action-hud-tor2e/commit/34d84002b59ba784c1aed02a7f84b4526d335ea2))
+* **items:** Add support for right-clicking an item to open its sheet ([85b56c5](https://github.com/tdakanalis/token-action-hud-tor2e/commit/85b56c591f2433133b6ba7069c71b0c63c6b3959))
+
 # [1.1.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.0.2...v1.1.0) (2025-05-14)
 
 
