@@ -42,7 +42,12 @@
             "bonus": "Ranged only; Your ranged attacks: -1d; Enemy melee attacks vs you: -1d",
             "task": "Gain Ground"
           }
-        }
+        },
+        "addToCombat": "Add to Combat",
+        "removeFromCombat": "Remove from Combat",
+        "targetToken": "Target",
+        "untargetToken": "Remove Target",
+        "utilities": "Utilities"
       },
       "health": {
         "status": {

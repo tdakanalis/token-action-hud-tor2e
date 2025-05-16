@@ -5,6 +5,13 @@ export function getTargetedTokens() {
     return game.user.targets.map(token => token.id);
 }
 
+export function getControlledTokens() {
+    if (!game || !game.canvas) {
+        return [];
+    }
+    return game.canvas.tokens?.controlled ?? [];
+}
+
 export function capitalizeFirstLetter(string) {
     return string[0].toUpperCase() + string.slice(1);
 }

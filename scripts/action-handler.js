@@ -1,4 +1,4 @@
-import {getTargetedTokens, capitalizeFirstLetter, generateDiamonds} from "./utils.js";
+import {capitalizeFirstLetter, generateDiamonds, getControlledTokens, getTargetedTokens} from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
@@ -13,22 +13,21 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async buildSystemActions(groupIds) {
             this.GROUP = getGroup(coreModule);
 
-            const token = this.token;
-            if (!token) return;
-            const tokenId = token.id;
-            const actor = this.actor;
-            if (!actor) return;
-
-            console.debug('actor', this.actor);
+            console.debug('actor', this.actor ? this.actor : this.actors);
             console.debug('token', this.token);
+            console.debug('action', this.action);
             console.debug('game', game);
 
-            await this._loadStats();
-            await this._loadSkills();
-            await this._loadCombat();
-            await this._loadTraits();
-            await this._loadMiscellaneous();
-            await this._loadCommunity();
+            if (this.actor) {
+                await this._loadStats();
+                await this._loadSkills();
+                await this._loadCombat();
+                await this._loadTraits();
+                await this._loadMiscellaneous();
+                await this._loadCommunity();
+            } else {
+                await  this._loadCombatUtils();
+            }
         }
 
         async _loadStats() {
@@ -296,6 +295,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadCombat() {
             await this._loadWeapons();
             await this._loadArmours();
+            await this._loadCombatUtils();
             await this._loadCombatProficiencies();
             await this._loadCombatAttributes();
             await this._loadStances();
@@ -528,13 +528,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadEffects() {
             if (['character', 'adversary', 'lore', 'npc'].includes(this.actor.type)) {
                 const activeEffects = this.actor.effects.map(e => [...e?.statuses][0]);
-                const activeTargets = getTargetedTokens();
-                const allowedEffects = ["dead", "unconscious", "invisible"/*, "target"*/];
+                const allowedEffects = ["dead", "unconscious", "invisible"];
                 const effects = CONFIG.statusEffects.filter(e => allowedEffects.includes(e.id));
 
                 const actions = [];
                 effects.forEach(effect => {
-                    const active = (effect === 'target' && activeTargets?.includes(this.token.id)) || activeEffects?.includes(effect.id);
+                    const active = activeEffects?.includes(effect.id);
                     actions.push({
                         id: effect.id,
                         cssClass: active ? "effects active" : "effects",
@@ -638,11 +637,42 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        extractSkillId(url) {
-            const parts = url.split('/');
-            const filename = parts[parts.length - 1];
-            const skillPart = filename.split('.')[0];
-            return skillPart.split('-')[1];
+        async _loadCombatUtils() {
+            if (!game.user.isGM) {
+                return;
+            }
+
+            const controlledTokens = getControlledTokens();
+            const toggleCombatId = "toggleCombat";
+            const toggleCombatName = controlledTokens.every(token => token.inCombat)
+                ? game.i18n.localize("tokenActionHud.tor2e.combat.removeFromCombat")
+                : game.i18n.localize("tokenActionHud.tor2e.combat.addToCombat");
+
+
+            const actions = [{
+                id: toggleCombatId,
+                name: toggleCombatName,
+                img: 'icons/svg/combat.svg',
+                encodedValue: ['multiple', 'multiple', toggleCombatId].join(this.delimiter),
+            }];
+
+            if (this.actor) {
+                const targetedTokens = getTargetedTokens();
+                const toggleTargetId = "toggleTarget";
+                const isTargeted = targetedTokens.has(this.token.id);
+                const toggleTargetName = isTargeted
+                    ? game.i18n.localize("tokenActionHud.tor2e.combat.untargetToken")
+                    : game.i18n.localize("tokenActionHud.tor2e.combat.targetToken");
+
+                actions.push({
+                    id: toggleTargetId,
+                    name: toggleTargetName,
+                    img: 'icons/svg/target.svg',
+                    encodedValue: [toggleTargetId, this.actor.type].join(this.delimiter),
+                });
+            }
+
+            this.addActions(actions, this.GROUP.utilities);
         }
     }
 })

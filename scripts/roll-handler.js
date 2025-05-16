@@ -1,6 +1,6 @@
 import {STATS} from "./constants.js";
 import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
-import {getTargetedTokens} from "./utils.js";
+import {getControlledTokens, getTargetedTokens} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -52,14 +52,25 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case 'effect':
                     await this._setEffect(typeActor, macroType)
                     break;
-                case 'target':
-                    await this._toggleTokenTarget()
+                case 'toggleTarget':
+                    await this._toggleTarget()
                     break;
                 case 'rest':
                     this._performRest(typeActor, macroType, event)
                     break;
                 case 'stance':
                     await this._setStance(typeActor, macroType)
+                    break;
+                case 'multiple':
+                    await this._handleMultipleTokens(macroType)
+                    break;
+            }
+        }
+
+        _handleMultipleTokens(typeAction) {
+            switch(typeAction) {
+                case 'toggleCombat':
+                    this._toggleCombat();
                     break;
             }
         }
@@ -110,13 +121,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _setEffect(typeActor, effect) {
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
-                if (effect === 'target') {
-                    this._toggleTokenTarget();
-                } else {
-                    const condition = CONFIG.statusEffects.find(e => e.id === effect);
-                    const overlay = game.settings.get("token-action-hud-tor2e", "addOverlayOnEffects");
-                    await this.actor.toggleStatusEffect(condition.id, {overlay: overlay});
-                }
+                const condition = CONFIG.statusEffects.find(e => e.id === effect);
+                const overlay = game.settings.get("token-action-hud-tor2e", "addOverlayOnEffects");
+                await this.actor.toggleStatusEffect(condition.id, {overlay: overlay});
             }
         }
 
@@ -155,7 +162,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        _toggleTokenTarget() {
+        _toggleTarget() {
             const target = this.token;
             if (!target) {
                 return;
@@ -170,6 +177,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 target.setTarget(false);
             } else {
                 target.setTarget(true, { releaseOthers: true });
+            }
+        }
+
+        async _toggleCombat() {
+            const tokens = getControlledTokens();
+            for (const token of tokens) {
+                await token.document.toggleCombatant();
             }
         }
     }

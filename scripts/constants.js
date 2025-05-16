@@ -19,6 +19,7 @@ export function getGroup(coreModule) {
         armours: {id: 'armours', name: coreModule.api.Utils.i18n('tor2e.items.common.equipped') + " " + coreModule.api.Utils.i18n('tor2e.items.armours.title'), type: 'system' },
         combatProficiences: { id: 'combatProficiences', name: coreModule.api.Utils.i18n('tor2e.actors.sections.combatProficiencies'), type: 'system' },
         combatAttributes: { id: 'combatAttributes', name: coreModule.api.Utils.i18n('tor2e.actors.sections.attributes'), type: 'system' },
+        utilities: { id: 'combatUtilities', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.combat.utilities'), type: 'system' },
 
         traits: { id: 'traits', name: coreModule.api.Utils.i18n('tor2e.actors.sections.traits'), type: 'system',  settings: {image: "systems/tor2e/assets/images/icons/miscellaneous.webp"} },
         features: { id: 'features', name: coreModule.api.Utils.i18n('tor2e.actors.traits.distinctiveFeatures'), type: 'system' },
