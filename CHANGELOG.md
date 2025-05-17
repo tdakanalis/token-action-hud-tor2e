@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.2.0...v1.3.0) (2025-05-17)
+
+
+### Features
+
+* **effects:** Add support for applying effects and statuses to a group of multiple selected tokens ([9df88d0](https://github.com/tdakanalis/token-action-hud-tor2e/commit/9df88d0cb137e72b5f1ad5e54051f8731acf9545))
+* **macros:** Add support for calling available macros. ([abfa47b](https://github.com/tdakanalis/token-action-hud-tor2e/commit/abfa47bae4306e4fa36eb0bc99ea42dc5e6058e2))
+
 # [1.2.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.1.0...v1.2.0) (2025-05-16)
 
 
