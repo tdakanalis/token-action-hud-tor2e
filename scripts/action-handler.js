@@ -1,4 +1,4 @@
-import {capitalizeFirstLetter, generateDiamonds, getControlledTokens, getTargetedTokens} from "./utils.js";
+import {capitalizeFirstLetter, generateDiamonds, getControlledTokens, getSetting, getTargetedTokens} from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
@@ -13,10 +13,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async buildSystemActions(groupIds) {
             this.GROUP = getGroup(coreModule);
 
-            console.debug('actor', this.actor ? this.actor : this.actors);
-            console.debug('token', this.token);
-            console.debug('action', this.action);
             console.debug('game', game);
+            console.debug('actor', this.actor ? this.actor : this.actors);
+            console.debug('token', this.token ? this.token : this.tokens);
+            console.debug('action', this.action);
 
             if (this.actor) {
                 await this._loadStats();
@@ -26,7 +26,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 await this._loadMiscellaneous();
                 await this._loadCommunity();
             } else {
-                await  this._loadCombatUtils();
+                await this._loadCombatUtils();
+                if (game.user.isGM || getSetting("displayPlayerHealthEvents")) {
+                    await this._loadHealthStatusesForMultiple();
+                }
+                if (game.user.isGM || getSetting("displayPlayerEffects")) {
+                    await this._loadEffectsForMultiple();
+                }
             }
         }
 
@@ -461,10 +467,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await this._loadRest();
             await this._loadOccupation();
 
-            if (game.user.isGM || game.settings.get("token-action-hud-tor2e", "displayPlayerHealthEvents")) {
+            if (game.user.isGM || getSetting("displayPlayerHealthEvents")) {
                 await this._loadHealth();
             }
-            if (game.user.isGM || game.settings.get("token-action-hud-tor2e", "displayPlayerEffects")) {
+            if (game.user.isGM || getSetting("displayPlayerEffects")) {
                 await this._loadEffects();
             }
         }
@@ -585,6 +591,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadCommunity() {
             const defaultCommunity = game.settings.get("tor2e", "communityCurrentActor");
             const community = game?.actors?.filter(a => a.type === "community" && a.id === defaultCommunity)?.[0];
+            if (!community) {
+                return;
+            }
             const members = community.system.members;
             const memberIds = members.filter(p => p?.id === this.actor?.id);
             if (memberIds <= 0) {
@@ -656,11 +665,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 encodedValue: ['multiple', 'multiple', toggleCombatId].join(this.delimiter),
             }];
 
-            if (this.actor) {
-                const targetedTokens = getTargetedTokens();
+            if (this.actor && this?.actor?.inCombat) {
                 const toggleTargetId = "toggleTarget";
-                const isTargeted = targetedTokens.has(this.token.id);
-                const toggleTargetName = isTargeted
+                const toggleTargetName =  getTargetedTokens().has(this.token?.id)
                     ? game.i18n.localize("tokenActionHud.tor2e.combat.untargetToken")
                     : game.i18n.localize("tokenActionHud.tor2e.combat.targetToken");
 
@@ -673,6 +680,49 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             this.addActions(actions, this.GROUP.utilities);
+        }
+
+        async _loadEffectsForMultiple() {
+            const activeEffects = [];
+            for (const actor  of this.actors) {
+                activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
+            }
+
+            const allowedEffects = ["dead", "unconscious", "invisible"];
+            const effects = CONFIG.statusEffects.filter(e => allowedEffects.includes(e.id));
+
+            const actions = [];
+            effects.forEach(effect => {
+                const active = activeEffects?.includes(effect.id);
+                actions.push({
+                    id: effect.id,
+                    cssClass: active ? "effects active" : "effects",
+                    name: coreModule.api.Utils.i18n(effect.name),
+                    img: effect.img,
+                    encodedValue: ['multiple', 'multiple', effect.id].join(this.delimiter),
+                });
+            })
+            this.addActions(actions, this.GROUP.effects);
+        }
+
+        async _loadHealthStatusesForMultiple() {
+            const activeEffects = [];
+            for (const actor  of this.actors) {
+                activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
+            }
+            const availableStatuses = ['weary', 'wounded', 'poisoned'];
+            availableStatuses.forEach(s => {
+                const active = activeEffects.includes(s);
+                const tooltip = coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + s);
+                this.addActions([{
+                    id: s,
+                    cssClass: active ? "stateOfHealth active" : "stateOfHealth",
+                    img: 'systems/tor2e/assets/images/icons/effects/' + s + '.svg',
+                    name: coreModule.api.Utils.i18n('tor2e.actors.stateOfHealth.' + s),
+                    tooltip: tooltip,
+                    encodedValue: ['multiple', 'multiple', s].join(this.delimiter),
+                }], this.GROUP.health);
+            });
         }
     }
 })
