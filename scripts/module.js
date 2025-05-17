@@ -30,17 +30,20 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
         async registerDefaults() {
             const groups = getGroup(coreModule);
             Object.values(groups).forEach(group => {
-                group.listName = `TOR2e: ${group.name}`
+                if (!group.listName) {
+                    group.listName = `TOR2e: ${group.name}`
+                }
             })
             const groupsArray = Object.values(groups)
+
             DEFAULTS = {
                 layout: [
                     {
-                        nestId: 'stats',
-                        id: 'stats',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.sections.attributes'),
+                        nestId: groups.stats.id,
+                        id: groups.stats.id,
+                        name: groups.stats.name,
+                        settings: groups.stats.settings,
                         groups: [
-                            { ...groups.stats, nestId: 'stats' },
                             { ...groups.attributes, nestId: 'stats_attributes' },
                             { ...groups.resources, nestId: 'stats_resources' },
                             { ...groups.stature, nestId: 'stats_stature' },
@@ -49,23 +52,22 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
 
                     },
                     {
-                        nestId: 'skills',
-                        id: 'skills',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.sections.commonSkills'),
+                        nestId: groups.skills.id,
+                        id: groups.skills.id,
+                        name: groups.skills.name,
+                        settings: groups.skills.settings,
                         groups: [
-                            { ...groups.skills, nestId: 'skills' },
                             { ...groups.strength, nestId: 'skills_strength' },
                             { ...groups.heart, nestId: 'skills_heart' },
                             { ...groups.wits, nestId: 'skills_wits' },
                         ]
-
                     },
                     {
-                        nestId: 'combat',
-                        id: 'combat',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.sections.combat'),
+                        nestId: groups.combat.id,
+                        id: groups.combat.id,
+                        name: groups.combat.name,
+                        settings: groups.combat.settings,
                         groups: [
-                            { ...groups.combat, nestId: 'combat' },
                             { ...groups.weapons, nestId: 'combat_weapons' },
                             { ...groups.combatAttributes, nestId: 'combat_combatAttributes' },
                             { ...groups.stances, nestId: 'combat_stances' },
@@ -75,11 +77,11 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                         ]
                     },
                     {
-                        nestId: 'traits',
-                        id: 'traits',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.sections.traits'),
+                        nestId: groups.traits.id,
+                        id: groups.traits.id,
+                        name: groups.traits.name,
+                        settings: groups.traits.settings,
                         groups: [
-                            { ...groups.traits, nestId: 'traits' },
                             { ...groups.features, nestId: 'traits_features' },
                             { ...groups.occupation, nestId: 'traits_occupation' },
                             { ...groups.flaws, nestId: 'traits_flaws' },
@@ -89,11 +91,11 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                         ]
                     },
                     {
-                        nestId: 'misc',
-                        id: 'misc',
-                        name: coreModule.api.Utils.i18n('tor2e.items.miscellaneous.title'),
+                        nestId: groups.misc.id,
+                        id: groups.misc.id,
+                        name: groups.misc.name,
+                        settings: groups.misc.settings,
                         groups: [
-                            { ...groups.misc, nestId: 'misc' },
                             { ...groups.equipment, nestId: 'misc_equipment' },
                             { ...groups.rest, nestId: 'misc_rest' },
                             { ...groups.health, nestId: 'misc_health' },
@@ -101,13 +103,22 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                         ]
                     },
                     {
-                        nestId: 'community',
-                        id: 'community',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.types.community.title'),
+                        nestId: groups.community.id,
+                        id: groups.community.id,
+                        name: groups.community.name,
+                        settings: groups.community.settings,
                         groups: [
-                            { ...groups.community, nestId: 'community' },
                             { ...groups.travel, nestId: 'community_travel' },
                             { ...groups.fellowship, nestId: 'community_fellowship' },
+                        ]
+                    },
+                    {
+                        nestId: groups.macros.id,
+                        id: groups.macros.id,
+                        name: groups.macros.name,
+                        settings: groups.macros.settings,
+                        groups: [
+                            { ...groups.core_macros, nestId: 'macros_macros' },
                         ]
                     }
                 ],
@@ -115,11 +126,14 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
             }
             return DEFAULTS
         }
-    }
 
-    const settings = getSettings(coreModule);
-    for (const [key, value] of Object.entries(settings)) {
-        game.settings.register(MODULE_ID, key, value);
+        /** @override */
+        async registerSettings(onChangeFunction) {
+            const settings = getSettings(coreModule);
+            for (const [key, value] of Object.entries(settings)) {
+                game.settings.register(MODULE_ID, key, value);
+            }
+        }
     }
 
     const module = game.modules.get(MODULE_ID);

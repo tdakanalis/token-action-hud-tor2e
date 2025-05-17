@@ -38,6 +38,10 @@ export function getGroup(coreModule) {
         community: { id: 'community', name: coreModule.api.Utils.i18n('tor2e.actors.types.community.title'), type: 'system',  settings: {image: "systems/tor2e/assets/images/icons/actors/community.webp"} },
         travel: { id: 'travel', name: coreModule.api.Utils.i18n('tor2e.actors.sections.travel'), type: 'system' },
         fellowship: { id: 'fellowship', name: coreModule.api.Utils.i18n('tor2e.actors.stats.fellowshipPoints'), type: 'system' },
+
+        //include groups from the core module
+        macros: { id: 'macros', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'system',  settings: {image: "icons/svg/dice-target.svg"} },
+        core_macros: { id: 'macros',  name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'core' },
     };
 }
 

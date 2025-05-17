@@ -1,6 +1,6 @@
 import {STATS} from "./constants.js";
 import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
-import {getControlledTokens, getTargetedTokens} from "./utils.js";
+import {getControlledTokens, getSetting, getTargetedTokens} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -11,7 +11,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async handleActionClick(event, encodedValue) {
             const decoded = encodedValue.split("|");
 
-            console.debug(event, encodedValue);
+            console.debug(encodedValue);
 
             let typeAction = decoded[0]
             let typeActor = decoded[1]
@@ -28,26 +28,23 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             switch(typeAction) {
-                case 'armour':
-                    this._showItem(typeActor, macroType, macroSubType);
-                    break;
                 case 'skill':
-                    this._rollSkill(typeActor, macroType, macroSubType)
+                    await this._rollSkill(typeActor, macroType, macroSubType)
                     break;
                 case 'stature':
-                    this._rollStature(typeActor, macroType)
+                    await this._rollStature(typeActor, macroType)
                     break;
                 case 'proficiency':
-                    this._rollProficiency(typeActor, macroType)
+                    await this._rollProficiency(typeActor, macroType)
                     break;
                 case 'combatAttribute':
-                    this._rollSpecial(typeActor, macroType, macroSubType)
+                    await this._rollSpecial(typeActor, macroType, macroSubType)
                     break;
                 case 'weapon':
-                    this._useWeapon(typeActor, macroType, macroSubType)
+                    await this._useWeapon(typeActor, macroType, macroSubType)
                     break;
                 case 'health':
-                    this._setHealthStatus(typeActor, macroType)
+                    await this._setHealthStatus(typeActor, macroType)
                     break;
                 case 'effect':
                     await this._setEffect(typeActor, macroType)
@@ -56,7 +53,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     await this._toggleTarget()
                     break;
                 case 'rest':
-                    this._performRest(typeActor, macroType, event)
+                    await this._performRest(typeActor, macroType, event)
                     break;
                 case 'stance':
                     await this._setStance(typeActor, macroType)
@@ -67,29 +64,39 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        _handleMultipleTokens(typeAction) {
+        async _handleMultipleTokens(typeAction) {
             switch(typeAction) {
                 case 'toggleCombat':
-                    this._toggleCombat();
+                    await this._toggleCombat();
+                    break;
+                case 'unconscious':
+                case 'dead':
+                case 'invisible':
+                    await this._toggleEffect(typeAction);
+                    break;
+                case 'weary':
+                case 'poisoned':
+                case 'wounded':
+                    await this._toggleHealthStatus(typeAction);
                     break;
             }
         }
 
-        _showItem(itemId) {
+        async _showItem(itemId) {
             if (this.isRenderItem()) {
-                this.renderItem(this.actor, itemId)
+                await this.renderItem(this.actor, itemId)
             }
         }
 
-        _rollStature(typeActor, attr) {
+        async _rollStature(typeActor, attr) {
             if(typeActor === 'character') {
                 if (STATS.STATURE.includes(attr)) {
-                    game.tor2e.macro.utility.rollHeroicStatureMacro(coreModule.api.Utils.i18n('tor2e.statureStats.' + attr));
+                    await game.tor2e.macro.utility.rollHeroicStatureMacro(coreModule.api.Utils.i18n('tor2e.statureStats.' + attr));
                 }
             }
         }
 
-        _rollProficiency(typeActor, proficiency) {
+        async _rollProficiency(typeActor, proficiency) {
             if(typeActor === 'character') {
                 function getProficiencyFrom(_skillId, actor = game.tor2e.macro.utility._getActorFrom({})) {
                     let skills = actor.extendedData?.getCombatProficiencies();
@@ -97,43 +104,43 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     skill.favoured = {value: false};
                     return skill;
                 }
-                game.tor2e.macro.utility._executeSkillMacro(this.actor,
+                await game.tor2e.macro.utility._executeSkillMacro(this.actor,
                     coreModule.api.Utils.i18n('tor2e.combatProficiencies.' + proficiency), true, getProficiencyFrom, 0)
             }
         }
 
-        _performRest(typeActor, restType, event) {
+        async _performRest(typeActor, restType, event) {
             if(typeActor === 'character') {
                 tor2eUtilities.eventsProcessing.actor = this.actor;
                 if (restType === 'short') {
-                    tor2eUtilities.eventsProcessing.onShortRest({}, event);
+                    await tor2eUtilities.eventsProcessing.onShortRest({}, event);
                 } else {
-                    tor2eUtilities.eventsProcessing.onProlongedRest({}, event);
+                    await tor2eUtilities.eventsProcessing.onProlongedRest({}, event);
                 }
             }
         }
 
-        _setHealthStatus(typeActor, status) {
+        async _setHealthStatus(typeActor, status) {
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
-                this.actor.toggleStatusEffectById(status);
+                await this.actor.toggleStatusEffectById(status);
             }
         }
 
         async _setEffect(typeActor, effect) {
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
                 const condition = CONFIG.statusEffects.find(e => e.id === effect);
-                const overlay = game.settings.get("token-action-hud-tor2e", "addOverlayOnEffects");
+                const overlay = getSetting("addOverlayOnEffects");
                 await this.actor.toggleStatusEffect(condition.id, {overlay: overlay});
             }
         }
 
         async _setStance(typeActor, stanceClass) {
             if(typeActor === 'character') {
-                game.tor2e.macro.utility.setPlayerStance({stanceClass: stanceClass, onlyLoremaster: false})
+                await game.tor2e.macro.utility.setPlayerStance({stanceClass: stanceClass, onlyLoremaster: false})
             }
         }
 
-        _rollSkill(typeActor, attr, skill) {
+        async _rollSkill(typeActor, attr, skill) {
             if(typeActor === 'character') {
                 game.tor2e.macro.utility.rollSkillMacro(coreModule.api.Utils.i18n('tor2e.commonSkills.' + skill));
             } else if(typeActor === 'npc') {
@@ -144,25 +151,25 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     skill.value = skill.system?.value;
                     return skill;
                 }
-                game.tor2e.macro.utility._executeSkillMacro(this.actor, skill, true, getSkillFrom, 0)
+                await game.tor2e.macro.utility._executeSkillMacro(this.actor, skill, true, getSkillFrom, 0)
             }
         }
 
-        _rollSpecial(typeActor, special) {
+        async _rollSpecial(typeActor, special) {
             if(typeActor === 'character' || typeActor === 'adversary') {
                 if (special === 'armour') {
-                    game.tor2e.macro.utility.rollSpecialSkillMacro("Protection");
+                    await game.tor2e.macro.utility.rollSpecialSkillMacro("Protection");
                 }
             }
         }
 
-        _useWeapon(typeActor, weapon) {
+        async _useWeapon(typeActor, weapon) {
             if(typeActor === 'character' || typeActor === 'adversary') {
-                game.tor2e.macro.utility.rollItemMacro(weapon, "weapon");
+                await game.tor2e.macro.utility.rollItemMacro(weapon, "weapon");
             }
         }
 
-        _toggleTarget() {
+        async _toggleTarget() {
             const target = this.token;
             if (!target) {
                 return;
@@ -174,9 +181,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             // Toggle the target state
             if (isTargeted) {
-                target.setTarget(false);
+                await target.setTarget(false);
             } else {
-                target.setTarget(true, { releaseOthers: true });
+                await target.setTarget(true, { releaseOthers: true });
             }
         }
 
@@ -184,6 +191,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const tokens = getControlledTokens();
             for (const token of tokens) {
                 await token.document.toggleCombatant();
+            }
+        }
+
+        async _toggleEffect(effect) {
+            for (const actor of this.actors) {
+                const condition = CONFIG.statusEffects.find(e => e.id === effect);
+                const overlay = getSetting("addOverlayOnEffects");
+                await actor.toggleStatusEffect(condition.id, {overlay: overlay});
+            }
+        }
+
+        async _toggleHealthStatus(status) {
+            for (const actor of this.actors) {
+                await actor.toggleStatusEffectById(status);
             }
         }
     }

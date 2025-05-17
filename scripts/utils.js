@@ -1,3 +1,5 @@
+import {MODULE_ID} from "./constants.js";
+
 export function getTargetedTokens() {
     if (!game || !game.user || !game.user.targets) {
         return [];
@@ -26,4 +28,8 @@ export function generateDiamonds(count) {
     }
 
     return full.repeat(count) + empty.repeat(total - count);
+}
+
+export function getSetting(label) {
+    return game.settings.get(MODULE_ID, label)
 }

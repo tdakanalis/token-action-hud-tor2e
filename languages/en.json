@@ -1,6 +1,7 @@
 {
   "tokenActionHud": {
     "tor2e": {
+      "macros": "Macros",
       "settings": {
         "displayPlayerHealthEvents": {
           "title": "Allow players to apply health statuses",
