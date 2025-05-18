@@ -27,6 +27,24 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
 
+            if (this.isAlt || this.isCtrl || this.isShift) {
+                if (typeActor === 'character' && (typeAction === "armour" || typeAction === "weapon")) {
+                    const equipped = "system.equipped.value";
+                    const dropped =  "system.dropped.value";
+                    if (this.isAlt) {
+                        await this._setItemStatus(macroSubType, equipped, false, dropped, false)
+                        return;
+                    } else if (this.isCtrl) {
+                        await this._setItemStatus(macroSubType, equipped, true, dropped, false)
+                        return;
+                    } else if (this.isShift) {
+                        await this._setItemStatus(macroSubType, dropped, true, equipped, false)
+                        return;
+                    }
+                }
+                return;
+            }
+
             switch(typeAction) {
                 case 'skill':
                     await this._rollSkill(typeActor, macroType, macroSubType)
@@ -163,9 +181,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        async _useWeapon(typeActor, weapon) {
+        async _useWeapon(typeActor, weapon, itemId) {
             if(typeActor === 'character' || typeActor === 'adversary') {
-                await game.tor2e.macro.utility.rollItemMacro(weapon, "weapon");
+                const item = coreModule.api.Utils.getItem(this.actor, itemId);
+                if(item?.system?.equipped.value){
+                    await game.tor2e.macro.utility.rollItemMacro(weapon, "weapon");
+                }
             }
         }
 
@@ -206,6 +227,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             for (const actor of this.actors) {
                 await actor.toggleStatusEffectById(status);
             }
+        }
+
+        async _setItemStatus(itemId, primaryAttribute, primaryValue, secondaryAttribute, secondaryValue) {
+            const item = coreModule.api.Utils.getItem(this.actor, itemId);
+            await item.update({[secondaryAttribute]: secondaryValue});
+            this.actor.toggleItemActiveEffect(itemId, primaryValue);
+            await item.update({[primaryAttribute]: primaryValue});
         }
     }
 })

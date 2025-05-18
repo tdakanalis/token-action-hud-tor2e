@@ -19,7 +19,8 @@
       "groups": {
         "stats": "Stats",
         "advancement": "Advancement",
-        "stances": "Stances"
+        "stances": "Stances",
+        "unequipped": "Unequipped"
       },
       "combat": {
         "stance": {

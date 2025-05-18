@@ -301,19 +301,24 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadCombat() {
             await this._loadWeapons();
             await this._loadArmours();
+            await this._loadWeapons("unequipped");
+            await this._loadArmours("unequipped");
+            await this._loadWeapons("dropped");
+            await this._loadArmours("dropped");
             await this._loadCombatUtils();
             await this._loadCombatProficiencies();
             await this._loadCombatAttributes();
             await this._loadStances();
         }
-        async _loadWeapons() {
+        async _loadWeapons(mode = "equipped") {
             if(this.actor.type === 'character' || this.actor.type === 'adversary') {
                 const weapons = Array.from(this.actor.items.filter(e => e.type === 'weapon'))
                 let proficiencies = null;
                 if (this.actor.type === 'character') {
                     proficiencies = this.actor.extendedData?.getCombatProficiencies();
                 }
-                weapons.filter(w => w?.system?.equipped?.value).forEach(weapon => {
+                const group = mode === "equipped" ? this.GROUP.weapons : mode === "dropped" ? this.GROUP.dropped : this.GROUP.unequipped;
+                weapons.filter(w => (mode === "equipped" && w?.system?.equipped?.value) || (mode === "unequipped" && !w?.system?.equipped?.value && !w?.system?.dropped?.value) || (mode === "dropped" && w?.system?.dropped?.value)).forEach(weapon => {
                     let damage = weapon?.system?.damage?.value;
                     let injury = weapon?.system?.injury?.value;
                     const proficiency = proficiencies ? proficiencies.get(weapon?.system?.group?.value) : weapon?.system?.skill;
@@ -330,16 +335,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                                 '  ' + coreModule.api.Utils.i18n(proficiency?.favoured?.label) : '')},
                     };
 
-                    this.addActions([action], this.GROUP.weapons)
+                    this.addActions([action], group)
                 })
             }
         }
-        async _loadArmours() {
+        async _loadArmours(mode = "equipped") {
             if(this.actor.type === 'character') {
-                const armours = Array.from(this.actor.items.filter(e => e.type === 'armour'))
-                armours.filter(a => a?.system?.equipped?.value).forEach(armour => {
-                    let equipped = armour?.system?.equipped?.value ? coreModule.api.Utils.i18n('tor2e.items.common.equipped') : '';
-                    let dropped = armour?.system?.dropped?.value ? coreModule.api.Utils.i18n('tor2e.items.common.dropped') : '';
+                const armours = Array.from(this.actor.items.filter(e => e.type === 'armour'));
+                const group = mode === "equipped" ? this.GROUP.armours : mode === "dropped" ? this.GROUP.dropped : this.GROUP.unequipped;
+                armours.filter(w => (mode === "equipped" && w?.system?.equipped?.value) || (mode === "unequipped" && !w?.system?.equipped?.value && !w?.system?.dropped?.value) || (mode === "dropped" && w?.system?.dropped?.value)).forEach(armour => {
                     let protection = armour?.system?.protection?.value;
                     if (armour.system.group.value === 'head') {
                         protection += 'D';
@@ -352,7 +356,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         description: armour.name,
                         encodedValue: ['armour', 'character', armour.name, armour.id].join(this.delimiter),
                         info1: {text: protection},
-                    }], this.GROUP.armours)
+                    }], group)
                 })
             }
         }

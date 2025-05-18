@@ -73,7 +73,9 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                             { ...groups.stances, nestId: 'combat_stances' },
                             { ...groups.utilities, nestId: 'combat_utilities' },
                             { ...groups.combatProficiences, nestId: 'combat_combatProficiences' },
-                            { ...groups.armours, nestId: 'combat_armours' }
+                            { ...groups.armours, nestId: 'combat_armours' },
+                            { ...groups.unequipped, nestId: 'combat_unequipped' },
+                            { ...groups.dropped, nestId: 'combat_dropped' }
                         ]
                     },
                     {

@@ -17,6 +17,8 @@ export function getGroup(coreModule) {
         stances: { id: 'stances', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.groups.stances'), type: 'system' },
         weapons: {id: 'weapons', name: coreModule.api.Utils.i18n('tor2e.items.common.equipped') + " " + coreModule.api.Utils.i18n('tor2e.items.weapons.title'), type: 'system' },
         armours: {id: 'armours', name: coreModule.api.Utils.i18n('tor2e.items.common.equipped') + " " + coreModule.api.Utils.i18n('tor2e.items.armours.title'), type: 'system' },
+        unequipped: {id: 'unequipped', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.groups.unequipped'), type: 'system' },
+        dropped: {id: 'dropped', name: coreModule.api.Utils.i18n('tor2e.items.common.dropped'), type: 'system' },
         combatProficiences: { id: 'combatProficiences', name: coreModule.api.Utils.i18n('tor2e.actors.sections.combatProficiencies'), type: 'system' },
         combatAttributes: { id: 'combatAttributes', name: coreModule.api.Utils.i18n('tor2e.actors.sections.attributes'), type: 'system' },
         utilities: { id: 'combatUtilities', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.combat.utilities'), type: 'system' },
