@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.3.0...v1.4.0) (2025-05-18)
+
+
+### Features
+
+* **war-gear:** Add support for equip/unequip/drop of weapon or armour ([d4dd00b](https://github.com/tdakanalis/token-action-hud-tor2e/commit/d4dd00b76531ead60fb7cabb95d7f0622ef6c240))
+
 # [1.3.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.2.0...v1.3.0) (2025-05-17)
 
 
