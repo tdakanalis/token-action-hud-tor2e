@@ -42,8 +42,7 @@ export function getGroup(coreModule) {
         fellowship: { id: 'fellowship', name: coreModule.api.Utils.i18n('tor2e.actors.stats.fellowshipPoints'), type: 'system' },
 
         //include groups from the core module
-        macros: { id: 'macros', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'system',  settings: {image: "icons/svg/dice-target.svg"} },
-        core_macros: { id: 'macros',  name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'core' },
+        macros: { id: 'macros', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'system',  settings: {image: "icons/svg/dice-target.svg"} }
     };
 }
 

@@ -1,4 +1,11 @@
-import {capitalizeFirstLetter, generateDiamonds, getControlledTokens, getSetting, getTargetedTokens} from "./utils.js";
+import {
+    capitalizeFirstLetter,
+    generateDiamonds,
+    getControlledTokens,
+    getImage,
+    getSetting,
+    getTargetedTokens
+} from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
@@ -33,6 +40,30 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 if (game.user.isGM || getSetting("displayPlayerEffects")) {
                     await this._loadEffectsForMultiple();
                 }
+            }
+            await this._loadMacros();
+        }
+
+        async _loadMacros() {
+            const macros = game.macros.filter(macro => {
+                const { ownership } = macro;
+                return ownership[game.userId] ? ownership[game.userId] > 0 : ownership.default > 0;
+            });
+
+            for (const macro of macros) {
+                const group = {
+                    id: 'macros_' + (macro?.folder?.name ?? 'macros'),
+                    name: macro?.folder?.name ?? 'macros'
+                }
+
+                this.addGroup(group, {id: this.GROUP.macros.id}, true);
+
+                this.addActions([{
+                    id: 'tor2e_' + macro.id,
+                    name: macro.name,
+                    img: getImage(macro),
+                    encodedValue: ['macro', 'all', macro.id].join(this.delimiter),
+                }], group);
             }
         }
 

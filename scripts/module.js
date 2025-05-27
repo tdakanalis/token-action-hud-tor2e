@@ -118,10 +118,7 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                         nestId: groups.macros.id,
                         id: groups.macros.id,
                         name: groups.macros.name,
-                        settings: groups.macros.settings,
-                        groups: [
-                            { ...groups.core_macros, nestId: 'macros_macros' },
-                        ]
+                        settings: groups.macros.settings
                     }
                 ],
                 groups: groupsArray

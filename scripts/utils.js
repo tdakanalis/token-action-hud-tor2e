@@ -33,3 +33,14 @@ export function generateDiamonds(count) {
 export function getSetting(label) {
     return game.settings.get(MODULE_ID, label)
 }
+
+export function getImage(entity, defaultImages = []) {
+    defaultImages.push("icons/svg/mystery-man.svg");
+    let result = "";
+    if (game.tokenActionHud.displayIconsSetting) {
+        result = (typeof entity === "string")
+            ? entity
+            : entity?.img ?? entity?.icon ?? "";
+    }
+    return !defaultImages.includes(result) ? result : "";
+}

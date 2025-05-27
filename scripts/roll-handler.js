@@ -79,6 +79,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case 'multiple':
                     await this._handleMultipleTokens(macroType)
                     break;
+                case 'macro':
+                    await this._executeMacro(macroType)
+                    break;
             }
         }
 
@@ -234,6 +237,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await item.update({[secondaryAttribute]: secondaryValue});
             this.actor.toggleItemActiveEffect(itemId, primaryValue);
             await item.update({[primaryAttribute]: primaryValue});
+        }
+
+        async _executeMacro(macroId) {
+            await game.macros.get(macroId).execute();
         }
     }
 })
