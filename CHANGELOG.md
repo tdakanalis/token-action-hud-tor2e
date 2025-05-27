@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.4.0...v1.5.0) (2025-05-27)
+
+
+### Features
+
+* **macros:** Add support for grouping macros into subcategories by organizing them into folders ([f3df938](https://github.com/tdakanalis/token-action-hud-tor2e/commit/f3df938044e8839ca85853b8371bf9f4236c3bb1))
+
 # [1.4.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.3.0...v1.4.0) (2025-05-18)
 
 
