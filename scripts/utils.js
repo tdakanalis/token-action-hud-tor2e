@@ -37,7 +37,7 @@ export function getSetting(label) {
 export function getImage(entity, defaultImages = []) {
     defaultImages.push("icons/svg/mystery-man.svg");
     let result = "";
-    if (game.tokenActionHud.displayIconsSetting) {
+    if (game.settings.get("token-action-hud-core", "displayIcons")) {
         result = (typeof entity === "string")
             ? entity
             : entity?.img ?? entity?.icon ?? "";
