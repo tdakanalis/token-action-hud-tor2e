@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.5.0...v1.5.1) (2025-06-07)
+
+
+### Bug Fixes
+
+* **macros:** fix image display for macros ([9010d8c](https://github.com/tdakanalis/token-action-hud-tor2e/commit/9010d8c459139532a0d38b96b5928c3354a304b0))
+
 # [1.5.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.4.0...v1.5.0) (2025-05-27)
 
 
