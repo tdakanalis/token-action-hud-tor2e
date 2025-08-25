@@ -19,7 +19,11 @@
       {
         "id": "tor2e",
         "type": "system",
-        "compatibility": {}
+        "compatibility": {
+          "minimum": "4",
+          "verified": "5",
+          "maximum": "5"
+        }
       }
     ],
     "requires": [
