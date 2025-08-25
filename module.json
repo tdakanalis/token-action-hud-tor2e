@@ -32,7 +32,9 @@
       {
         "id": "token-action-hud-core",
         "type": "module",
-        "compatibility": {}
+        "compatibility": {
+          "minimum": "2.0.13"
+        }
       }
     ]
   },
