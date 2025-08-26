@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.5.1...v1.5.2) (2025-08-26)
+
+
+### Bug Fixes
+
+* **metadata:** update the module.json to include tor2e and dnd5e system requirement and compatibility information ([881b3ce](https://github.com/tdakanalis/token-action-hud-tor2e/commit/881b3ce4c8555e036ef6825b382de46144fe0bf5))
+
 ## [1.5.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.5.0...v1.5.1) (2025-06-07)
 
 
