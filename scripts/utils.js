@@ -34,6 +34,13 @@ export function getSetting(label) {
     return game.settings.get(MODULE_ID, label)
 }
 
+export function getCurrentCommunity() {
+    // Delegates to the system so the "current community" setting stays a single
+    // source of truth; the type guard covers the setting pointing at a stale id.
+    const community = game.tor2e?.macro?.utility?.getCommunity?.();
+    return community?.type === 'community' ? community : null;
+}
+
 export function getImage(entity, defaultImages = []) {
     defaultImages.push("icons/svg/mystery-man.svg");
     let result = "";

@@ -2,6 +2,7 @@ import {
     capitalizeFirstLetter,
     generateDiamonds,
     getControlledTokens,
+    getCurrentCommunity,
     getImage,
     getSetting,
     getTargetedTokens
@@ -641,19 +642,50 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadCommunity() {
-            const defaultCommunity = game.settings.get("tor2e", "communityCurrentActor");
-            const community = game?.actors?.filter(a => a.type === "community" && a.id === defaultCommunity)?.[0];
+            const community = getCurrentCommunity();
             if (!community) {
                 return;
             }
             const members = community.system.members;
             const memberIds = members.filter(p => p?.id === this.actor?.id);
-            if (memberIds <= 0) {
+            if (memberIds.length <= 0) {
                 return;
             }
 
             await this._loadTravel(community);
             await this._loadFellowship(community);
+            await this._loadSongs(community);
+        }
+
+        async _loadSongs(community) {
+            if (this.actor.type !== 'character') {
+                return;
+            }
+            const songs = community.items.filter(item => item.type === 'song');
+            songs.forEach(song => {
+                // Songs are grouped the way the community sheet groups them, by the
+                // song's own group value mapped through CONFIG.tor2e.songGroups.
+                const groupValue = song.system?.group?.value;
+                const groupLabel = CONFIG.tor2e?.songGroups?.[groupValue];
+                const group = {
+                    id: 'songs_' + (groupValue || 'songs'),
+                    name: groupLabel
+                        ? coreModule.api.Utils.i18n(groupLabel)
+                        : coreModule.api.Utils.i18n('tor2e.actors.sections.songs')
+                };
+
+                this.addGroup(group, {id: this.GROUP.songs.id}, true);
+
+                const used = song.system?.used?.value === true;
+                this.addActions([{
+                    id: song.id,
+                    cssClass: used ? "song active" : "song",
+                    name: song.name,
+                    img: getImage(song, ["systems/tor2e/assets/images/icons/default.webp"]),
+                    tooltip: song.system?.description?.value,
+                    encodedValue: ['song', this.actor.type, song.id].join(this.delimiter),
+                }], group);
+            });
         }
         async _loadTravel(community) {
             if (this.actor.type === 'character') {

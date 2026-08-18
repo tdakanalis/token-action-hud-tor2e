@@ -1,6 +1,7 @@
 import {STATS} from "./constants.js";
 import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
-import {getControlledTokens, getSetting, getTargetedTokens} from "./utils.js";
+import Tor2eSong from "/systems/tor2e/modules/song.js";
+import {getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -81,6 +82,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     break;
                 case 'macro':
                     await this._executeMacro(macroType)
+                    break;
+                case 'song':
+                    await this._playSong(typeActor, macroType)
                     break;
             }
         }
@@ -243,6 +247,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _executeMacro(macroId) {
             await game.macros.get(macroId).execute();
+        }
+
+        async _playSong(typeActor, songId) {
+            if (typeActor !== 'character') {
+                return;
+            }
+            const community = getCurrentCommunity();
+            if (!community) {
+                return;
+            }
+            // Tor2eSong resolves the performing character itself: a Loremaster gets a
+            // member picker, a player uses their assigned character.
+            await new Tor2eSong({songId, user: game.user, community}).play();
         }
     }
 })
