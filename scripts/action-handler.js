@@ -1,6 +1,7 @@
 import {
     capitalizeFirstLetter,
     generateDiamonds,
+    getActiveStatusIds,
     getControlledTokens,
     getCurrentCommunity,
     getImage,
@@ -20,11 +21,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         /** @override */
         async buildSystemActions(groupIds) {
             this.GROUP = getGroup(coreModule);
-
-            console.debug('game', game);
-            console.debug('actor', this.actor ? this.actor : this.actors);
-            console.debug('token', this.token ? this.token : this.tokens);
-            console.debug('action', this.action);
 
             if (this.actor) {
                 await this._loadStats();
@@ -415,70 +411,47 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
         async _loadCombatAttributes() {
-            if(this.actor.type === 'character') {
-                Object.keys(this.actor.system.combatAttributes).forEach(p => {
-                    const proficiency = this.actor.system.combatAttributes[p];
-                    let name = '';
-                    let value = '';
-                    let bonus = '';
-                    let image = '';
-                    if (p === 'parry') {
-                        name = coreModule.api.Utils.i18n(proficiency.label);
-                        value = (this.actor.extendedData.getParryBonus() || 0);
-                        const shield = this.actor.items.filter(e => e.type === 'armour' && e.system.group.value === 'shield');
-                        bonus = '+' + (shield.length > 0 ? shield[0].system.protection.value : 0);
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else if (p === 'armour') {
-                        name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
-                        value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
-                        bonus = (this.actor.extendedData?.getHeadGearProtectionValue() || 0) + 'D';
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else {
-                        return;
-                    }
-                    this.addActions([{
-                        id: p,
-                        name: name,
-                        img: image,
-                        description: name,
-                        encodedValue: ['combatAttribute', 'character', p].join(this.delimiter),
-                        info1: {text: '' + value},
-                        info2: {text: '' + bonus},
-                    }], this.GROUP.combatAttributes)
-                })
-            } else if (this.actor.type === 'adversary') {
-                const combatAttributes = ["parry", "armour"];
-                Object.values(combatAttributes).forEach(p => {
-                    const proficiency = this.actor.system?.parry;
-                    let name = '';
-                    let value = '';
-                    let bonus = '';
-                    let image = '';
-                    if (p === 'parry') {
-                        name = coreModule.api.Utils.i18n(proficiency.label);
-                        value = (this.actor.extendedData.getParryBonus() || 0);
-                        const shield = this.actor.items.filter(e => e.type === 'armour' && e.system.group.value === 'shield');
-                        bonus = '+' + (shield.length > 0 ? shield[0].system.protection.value : 0);
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else if (p === 'armour') {
-                        name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
-                        value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
-                        bonus = (this.actor.extendedData?.getHeadGearProtectionValue() || 0) + 'D';
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else {
-                        return;
-                    }
-                    this.addActions([{
-                        id: p,
-                        name: name,
-                        img: image,
-                        description: name,
-                        encodedValue: ['combatAttribute', 'adversary', p].join(this.delimiter),
-                        info1: {text: '' + value},
-                        info2: {text: '' + bonus},
-                    }], this.GROUP.combatAttributes)
-                })
+            const actorType = this.actor.type;
+            if (actorType !== 'character' && actorType !== 'adversary') {
+                return;
             }
+
+            // Characters hold these under system.combatAttributes alongside entries the
+            // HUD does not render; adversaries keep parry at the top level instead.
+            const attributes = actorType === 'character'
+                ? Object.keys(this.actor.system?.combatAttributes ?? {}).filter(p => p === 'parry' || p === 'armour')
+                : ['parry', 'armour'];
+            const parrySource = actorType === 'character'
+                ? this.actor.system?.combatAttributes?.parry
+                : this.actor.system?.parry;
+            const image = 'systems/tor2e/assets/images/icons/armour.png';
+
+            attributes.forEach(p => {
+                let name;
+                let value;
+                let bonus;
+
+                if (p === 'parry') {
+                    const shield = this.actor.items.filter(e => e.type === 'armour' && e.system?.group?.value === 'shield');
+                    name = coreModule.api.Utils.i18n(parrySource?.label);
+                    value = (this.actor.extendedData?.getParryBonus() || 0);
+                    bonus = '+' + (shield.length > 0 ? shield[0].system?.protection?.value : 0);
+                } else {
+                    name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
+                    value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
+                    bonus = (this.actor.extendedData?.getHeadGearProtectionValue() || 0) + 'D';
+                }
+
+                this.addActions([{
+                    id: p,
+                    name: name,
+                    img: image,
+                    description: name,
+                    encodedValue: ['combatAttribute', actorType, p].join(this.delimiter),
+                    info1: {text: '' + value},
+                    info2: {text: '' + bonus},
+                }], this.GROUP.combatAttributes)
+            });
         }
 
         async _loadTraits() {
@@ -575,7 +548,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _loadHealth() {
             if (['character', 'adversary', 'lore', 'npc'].includes(this.actor.type)) {
-                const activeEffects = this.actor.effects.map(e => [...e?.statuses][0]);
+                const activeEffects = getActiveStatusIds(this.actor);
                 this._getHealthStatuses([this.actor]).forEach(s => {
                     this.addActions([
                         this._buildHealthStatusAction(s, activeEffects.includes(s),
@@ -586,7 +559,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
         async _loadEffects() {
             if (['character', 'adversary', 'lore', 'npc'].includes(this.actor.type)) {
-                const activeEffects = this.actor.effects.map(e => [...e?.statuses][0]);
+                const activeEffects = getActiveStatusIds(this.actor);
                 const allowedEffects = ["dead", "unconscious", "invisible"];
                 const effects = CONFIG.statusEffects.filter(e => allowedEffects.includes(e.id));
 
@@ -790,8 +763,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _loadEffectsForMultiple() {
             const activeEffects = [];
-            for (const actor  of this.actors) {
-                activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
+            for (const actor of this.actors) {
+                activeEffects.push(...getActiveStatusIds(actor));
             }
 
             const allowedEffects = ["dead", "unconscious", "invisible"];
@@ -813,8 +786,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _loadHealthStatusesForMultiple() {
             const activeEffects = [];
-            for (const actor  of this.actors) {
-                activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
+            for (const actor of this.actors) {
+                activeEffects.push(...getActiveStatusIds(actor));
             }
             this._getHealthStatuses(Array.from(this.actors ?? [])).forEach(s => {
                 this.addActions([

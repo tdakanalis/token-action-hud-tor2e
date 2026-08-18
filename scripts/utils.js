@@ -1,8 +1,10 @@
 import {MODULE_ID} from "./constants.js";
 
 export function getTargetedTokens() {
+    // Always a Set: both callers use .has() on the result, and Foundry's Set#map
+    // returns a Set, so the fallback has to match rather than being an array.
     if (!game || !game.user || !game.user.targets) {
-        return [];
+        return new Set();
     }
     return game.user.targets.map(token => token.id);
 }
@@ -23,15 +25,25 @@ export function generateDiamonds(count) {
     const full = '◆';
     const empty = '◇';
 
-    if (count < 0 || count > total) {
-        throw new Error('Count must be between 0 and 6');
-    }
+    // Clamped rather than thrown. Nothing catches exceptions between here and Core's
+    // buildActionsCore, so a single out-of-range value used to take down the whole
+    // HUD, and the system's schema puts no maximum on skill or proficiency values.
+    const filled = Math.min(total, Math.max(0, Math.round(Number(count) || 0)));
 
-    return full.repeat(count) + empty.repeat(total - count);
+    return full.repeat(filled) + empty.repeat(total - filled);
 }
 
 export function getSetting(label) {
     return game.settings.get(MODULE_ID, label)
+}
+
+export function getActiveStatusIds(actor) {
+    // An effect can carry several statuses; the first one identifies it for the HUD.
+    // Spreading needs its own guard because `effect?.statuses` still yields undefined,
+    // and spreading undefined throws.
+    return Array.from(actor?.effects ?? [])
+        .map(effect => [...(effect?.statuses ?? [])][0])
+        .filter(Boolean);
 }
 
 export function isAllowedForUser(label) {

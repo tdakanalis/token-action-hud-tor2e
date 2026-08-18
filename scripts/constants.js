@@ -93,7 +93,5 @@ export const SKILLS = {
 
 
 export const STATS = {
-    ATTRIBUTE: ["strength", "heart", "wits"],
     STATURE: ["valour", "wisdom"],
-    RESOURCE: ["hope", "endurance", "shadow", "load", "travelLoad"],
 }

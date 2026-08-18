@@ -12,8 +12,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async handleActionClick(event, encodedValue) {
             const decoded = encodedValue.split("|");
 
-            console.debug(encodedValue);
-
             let typeAction = decoded[0]
             let typeActor = decoded[1]
             let macroType = decoded[2]
@@ -24,7 +22,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             if (this.isRightClick) {
-                this._showItem(macroSubType);
+                // Songs live on the community actor rather than this.actor, so they
+                // need their own lookup to open a sheet.
+                if (typeAction === 'song') {
+                    this._showSong(macroType);
+                } else {
+                    this._showItem(macroSubType);
+                }
                 return;
             }
 
@@ -122,6 +126,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _showItem(itemId) {
             if (this.isRenderItem()) {
                 await this.renderItem(this.actor, itemId)
+            }
+        }
+
+        async _showSong(songId) {
+            const community = getCurrentCommunity();
+            if (this.isRenderItem() && community) {
+                await this.renderItem(community, songId)
             }
         }
 
