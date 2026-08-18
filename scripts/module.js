@@ -137,7 +137,7 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
 
     const module = game.modules.get(MODULE_ID);
     module.api = {
-        requiredCoreModuleVersion: '2.0',
+        requiredCoreModuleVersion: '2',
         SystemManager: TOR2ESystemManager
     }
     Hooks.call('tokenActionHudSystemReady', module)

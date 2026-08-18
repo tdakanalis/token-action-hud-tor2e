@@ -36,6 +36,18 @@ Push to `main` triggers `.github/workflows/release.yml` → semantic-release. **
 
 `scripts/module.js` is the entry: it defines the SystemManager (layout + settings registration), attaches it to `game.modules.get(MODULE_ID).api`, and calls `Hooks.call('tokenActionHudSystemReady', module)`.
 
+### `requiredCoreModuleVersion` is an exact-match gate, not a minimum
+
+`module.js` sets `module.api.requiredCoreModuleVersion`. Core feeds it to `Utils.isSystemModuleCompatible`, which splits both versions on `.` and keeps the parts as **strings**, then rejects unless every part you supplied matches exactly:
+
+```js
+if (s.major !== o.major || (o.minor && s.minor !== o.minor) || (o.patch && s.patch !== o.patch)) // error
+```
+
+Because the parts are strings, `"0"` is truthy — so `'2.0'` means "major 2 **and** minor 0", i.e. 2.0.x only, and Core 2.1.1 is refused with *"requires ... version 2.0.X, but version 2.1.1 is installed"*. Keep this at the bare major (`'2'`); anything more specific breaks on Core's next minor release.
+
+This is separate from `module.json`'s `relationships.requires` minimum, which is Foundry's own check and is a true `>=` range. Both must allow the installed Core: the manifest range gates whether the module can be enabled, the runtime gate decides whether the HUD initialises.
+
 ### The three moving parts
 
 - **`constants.js`** — `getGroup(coreModule)` is the single source of truth for group ids/names/icons; `getSettings(coreModule)` for world settings; `SKILLS` and `STATS` are the TOR2E taxonomy (which skill belongs to strength/heart/wits, which resources exist).
