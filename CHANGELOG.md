@@ -1,3 +1,20 @@
+# [1.6.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.5.2...v1.6.0) (2026-08-18)
+
+
+### Bug Fixes
+
+* **compatibility:** accept any Token Action HUD Core 2.x ([06247b7](https://github.com/tdakanalis/token-action-hud-tor2e/commit/06247b7c11ed5b9d922c874eeb9926ae636af8bb))
+* **health:** add daunted, fix miserable in group mode and adversary Resolve ([f89cf71](https://github.com/tdakanalis/token-action-hud-tor2e/commit/f89cf71091e9cb511c2462b3f3ceba3c40a71d66))
+* **robustness:** stop a bad skill value taking down the HUD, drop debug logging ([ff1529e](https://github.com/tdakanalis/token-action-hud-tor2e/commit/ff1529ec5191a8fab8d226833c2d5226500aed0b))
+* **settings:** apply player-visibility settings on change and enforce on click ([4470ca8](https://github.com/tdakanalis/token-action-hud-tor2e/commit/4470ca8e3be7369b0363a5aa706dd104fce69dd1))
+
+
+### Features
+
+* **community:** favoured and used toggles, Eye Awareness ([9707ae8](https://github.com/tdakanalis/token-action-hud-tor2e/commit/9707ae888f26fa5e46190e480fa3650f0e6b9967))
+* **songs:** play community songs from the HUD ([c67278d](https://github.com/tdakanalis/token-action-hud-tor2e/commit/c67278d55a3027f2cedeff97ba75168cf940a63c))
+* **v14:** add support for Foundry VTT v14 and TOR2E system v6 ([853839f](https://github.com/tdakanalis/token-action-hud-tor2e/commit/853839fc7739d5ee92b859e2a2d5fc1460afb000))
+
 ## [1.5.2](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.5.1...v1.5.2) (2025-08-26)
 
 
