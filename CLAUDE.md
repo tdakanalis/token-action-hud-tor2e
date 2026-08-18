@@ -72,7 +72,9 @@ The module reaches directly into the game system in two ways:
 1. **Static imports of absolute Foundry paths** — `/systems/tor2e/modules/utilities.js`, `.../hud/Tor2eTokenHudExtension.js`, `.../combat/Tor2eStance.js`. These are listed in `rollup.config.js` under `external`; **any new system import must be added there** or the build breaks.
 2. **Globals** — `game.tor2e.macro.utility.*` for rolls (`rollSkillMacro`, `_executeSkillMacro`, `rollItemMacro`, `setPlayerStance`, …) and `actor.extendedData?.getX()` / `actor.system.*` for derived values.
 
-This is why `module.json` pins `tor2e` system compatibility (min 4, verified 5) alongside Foundry (12–13) and `token-action-hud-core` (≥2.0.13). System-internal APIs change between TOR2E majors.
+This is why `module.json` pins `tor2e` system compatibility (min 4, verified 6) alongside Foundry (min 12, verified 14) and `token-action-hud-core` (≥2.0.13). System-internal APIs change between TOR2E majors.
+
+Deliberately **no `compatibility.maximum`**: Foundry's `testAvailability()` treats a `maximum` below the running core as `REQUIRES_CORE_DOWNGRADE`, which hard-blocks the module from being enabled. With only `verified` set, a newer core marks it “unverified” and still loads. Don't reintroduce `maximum` unless a core version is known broken.
 
 ### i18n
 
