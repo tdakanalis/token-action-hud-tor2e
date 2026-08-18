@@ -69,6 +69,12 @@ Roll handler splits on `"|"` (hardcoded, matching Core's delimiter) and switches
 
 Macros are loaded in both modes and grouped dynamically by Foundry folder name via `addGroup(...)`.
 
+### Player-visibility settings
+
+`displayPlayerHealthEvents`, `displayPlayerEffects` and `displayPlayerEyeAwareness` are world-scoped Loremaster decisions. All are read through `isAllowedForUser(name)` in `utils.js` — `game.user.isGM || getSetting(name)` — so a GM always sees the feature and only players are gated. Each guarded feature is checked in **two** places: the `_load*` method that renders it, and the roll-handler method that acts on it, so a HUD built before the setting changed cannot be used to bypass it.
+
+`registerSettings` must spread each definition and attach `onChange: v => onChangeFunction(key, v)`. Core only rebuilds on `closeSettingsConfig` when `updateSettingsPending` is set, and that flag is set *only* via this callback (`updateCachedSettings`). Registering a setting without it means a Loremaster's change silently does not apply until some unrelated hook forces a rebuild.
+
 ### Modifier clicks
 
 Handled up front in `handleActionClick` before the dispatch switch: right-click opens the item sheet; on character weapons/armour Ctrl = equip, Alt = unequip, Shift = drop (`_setItemStatus` toggles `system.equipped.value` / `system.dropped.value`).

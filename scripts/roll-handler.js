@@ -1,7 +1,7 @@
 import {STATS} from "./constants.js";
 import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
 import Tor2eSong from "/systems/tor2e/modules/song.js";
-import {getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens} from "./utils.js";
+import {getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens, isAllowedForUser} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -158,12 +158,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _setHealthStatus(typeActor, status) {
+            if (!isAllowedForUser("displayPlayerHealthEvents")) {
+                return;
+            }
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
                 await this.actor.toggleStatusEffectById(status);
             }
         }
 
         async _setEffect(typeActor, effect) {
+            if (!isAllowedForUser("displayPlayerEffects")) {
+                return;
+            }
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
                 const condition = CONFIG.statusEffects.find(e => e.id === effect);
                 const overlay = getSetting("addOverlayOnEffects");
@@ -235,6 +241,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleEffect(effect) {
+            if (!isAllowedForUser("displayPlayerEffects")) {
+                return;
+            }
             for (const actor of this.actors) {
                 const condition = CONFIG.statusEffects.find(e => e.id === effect);
                 const overlay = getSetting("addOverlayOnEffects");
@@ -243,6 +252,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleHealthStatus(status) {
+            if (!isAllowedForUser("displayPlayerHealthEvents")) {
+                return;
+            }
             for (const actor of this.actors) {
                 await actor.toggleStatusEffectById(status);
             }

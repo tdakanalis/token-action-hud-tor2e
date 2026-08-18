@@ -66,6 +66,14 @@ export function getSettings(coreModule) {
             type: Boolean,
             default: true
         },
+        displayPlayerEyeAwareness: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerEyeAwareness.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerEyeAwareness.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: false
+        },
         addOverlayOnEffects: {
             name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.title'),
             hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.description'),

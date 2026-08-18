@@ -132,7 +132,14 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
         async registerSettings(onChangeFunction) {
             const settings = getSettings(coreModule);
             for (const [key, value] of Object.entries(settings)) {
-                game.settings.register(MODULE_ID, key, value);
+                // Core only rebuilds the HUD on closeSettingsConfig when a setting
+                // change marked it pending, and that only happens through this
+                // callback. Without it a Loremaster's change is not applied until
+                // some unrelated hook happens to trigger a rebuild.
+                game.settings.register(MODULE_ID, key, {
+                    ...value,
+                    onChange: newValue => onChangeFunction(key, newValue)
+                });
             }
         }
     }

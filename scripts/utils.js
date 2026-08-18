@@ -34,6 +34,11 @@ export function getSetting(label) {
     return game.settings.get(MODULE_ID, label)
 }
 
+export function isAllowedForUser(label) {
+    // Loremasters always see everything; the world setting only gates players.
+    return game.user.isGM || getSetting(label);
+}
+
 export function getCurrentCommunity() {
     // Delegates to the system so the "current community" setting stays a single
     // source of truth; the type guard covers the setting pointing at a stale id.

@@ -14,7 +14,7 @@ This module adds a repositionable HUD for The One Ring 2nd Edition, giving you q
 - Use LM utilities in the Miscellaneous menu to add or remove combatants, target or untarget tokens, and apply effects or statuses to multiple selected tokens.
 - Play your community's songs straight from the Community menu, grouped by song type.
 - Mark a skill as favoured, or a song as used, with Alt + Click.
-- See your community's Eye Awareness alongside its travel roles and Fellowship Points.
+- See your community's Eye Awareness alongside its travel roles and Fellowship Points, hidden from players unless the Loremaster enables it.
 - Organize your macros into folders and access them easily from the Macros menu.
 - Move the HUD freely and choose whether menus expand upward or downward.
 - Unlock the HUD to customize groups and actions.

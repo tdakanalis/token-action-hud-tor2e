@@ -4,8 +4,8 @@ import {
     getControlledTokens,
     getCurrentCommunity,
     getImage,
-    getSetting,
-    getTargetedTokens
+    getTargetedTokens,
+    isAllowedForUser
 } from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
 
@@ -35,10 +35,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 await this._loadCommunity();
             } else {
                 await this._loadCombatUtils();
-                if (game.user.isGM || getSetting("displayPlayerHealthEvents")) {
+                if (isAllowedForUser("displayPlayerHealthEvents")) {
                     await this._loadHealthStatusesForMultiple();
                 }
-                if (game.user.isGM || getSetting("displayPlayerEffects")) {
+                if (isAllowedForUser("displayPlayerEffects")) {
                     await this._loadEffectsForMultiple();
                 }
             }
@@ -508,10 +508,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await this._loadRest();
             await this._loadOccupation();
 
-            if (game.user.isGM || getSetting("displayPlayerHealthEvents")) {
+            if (isAllowedForUser("displayPlayerHealthEvents")) {
                 await this._loadHealth();
             }
-            if (game.user.isGM || getSetting("displayPlayerEffects")) {
+            if (isAllowedForUser("displayPlayerEffects")) {
                 await this._loadEffects();
             }
         }
@@ -659,7 +659,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadEyeAwareness(community) {
-            if (this.actor.type !== 'character') {
+            if (this.actor.type !== 'character' || !isAllowedForUser("displayPlayerEyeAwareness")) {
                 return;
             }
             const eyeAwareness = community.system?.eyeAwareness;
