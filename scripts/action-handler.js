@@ -655,6 +655,28 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await this._loadTravel(community);
             await this._loadFellowship(community);
             await this._loadSongs(community);
+            await this._loadEyeAwareness(community);
+        }
+
+        async _loadEyeAwareness(community) {
+            if (this.actor.type !== 'character') {
+                return;
+            }
+            const eyeAwareness = community.system?.eyeAwareness;
+            if (!eyeAwareness) {
+                return;
+            }
+            const maxLabel = capitalizeFirstLetter(coreModule.api.Utils.i18n('tor2e.actors.stats.max'));
+            this.addActions([{
+                id: 'eyeAwareness',
+                img: 'systems/tor2e/assets/images/icons/shadow-weakness.png',
+                name: coreModule.api.Utils.i18n(eyeAwareness?.label),
+                // Display-only, like the other community entries: there is no
+                // system-side action to roll or advance the Eye.
+                encodedValue: ['community', 'character', 'eyeAwareness'].join(this.delimiter),
+                info1: { class: "hud-info", text: "" + (eyeAwareness?.value ?? 0) },
+                info2: { class: "hud-info", text: maxLabel + " " + (eyeAwareness?.max ?? 0) },
+            }], this.GROUP.eyeAwareness);
         }
 
         async _loadSongs(community) {

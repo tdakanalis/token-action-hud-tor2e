@@ -41,6 +41,7 @@ export function getGroup(coreModule) {
         travel: { id: 'travel', name: coreModule.api.Utils.i18n('tor2e.actors.sections.travel'), type: 'system' },
         fellowship: { id: 'fellowship', name: coreModule.api.Utils.i18n('tor2e.actors.stats.fellowshipPoints'), type: 'system' },
         songs: { id: 'songs', name: coreModule.api.Utils.i18n('tor2e.actors.sections.songs'), type: 'system' },
+        eyeAwareness: { id: 'eyeAwareness', name: coreModule.api.Utils.i18n('tor2e.actors.stats.eyeAwareness'), type: 'system' },
 
         //include groups from the core module
         macros: { id: 'macros', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'system',  settings: {image: "icons/svg/dice-target.svg"} }

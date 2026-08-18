@@ -73,6 +73,8 @@ Macros are loaded in both modes and grouped dynamically by Foundry folder name v
 
 Handled up front in `handleActionClick` before the dispatch switch: right-click opens the item sheet; on character weapons/armour Ctrl = equip, Alt = unequip, Shift = drop (`_setItemStatus` toggles `system.equipped.value` / `system.dropped.value`).
 
+Alt additionally toggles favoured on a skill and used on a song, and those two are checked *before* the weapons/armour branch. Alt is deliberate: the system gates the same toggles on its own sheets behind `tor2eUtilities.utilities.isAllowed`, which is just `event.altKey`. Keep new toggles on Alt so the HUD and the sheets agree.
+
 ### Actor types
 
 `character`, `adversary`, `npc`, `lore`. Almost every `_load*` and roll method branches on these, and most features are character-only. When adding anything, decide explicitly which types it applies to — the existing code guards with `if (this.actor.type === ...)` or `['character','adversary','lore','npc'].includes(...)`.

@@ -29,6 +29,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             if (this.isAlt || this.isCtrl || this.isShift) {
+                // Alt is the system's own modifier for these toggles: its sheet gates
+                // them behind tor2eUtilities.utilities.isAllowed, which is event.altKey.
+                if (this.isAlt && typeAction === 'skill') {
+                    await this._toggleFavouredSkill(typeActor, macroSubType);
+                    return;
+                }
+                if (this.isAlt && typeAction === 'song') {
+                    await this._toggleSongUsed(macroType);
+                    return;
+                }
                 if (typeActor === 'character' && (typeAction === "armour" || typeAction === "weapon")) {
                     const equipped = "system.equipped.value";
                     const dropped =  "system.dropped.value";
@@ -247,6 +257,40 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _executeMacro(macroId) {
             await game.macros.get(macroId).execute();
+        }
+
+        async _toggleFavouredSkill(typeActor, skillId) {
+            if (typeActor === 'character') {
+                const path = `system.commonSkills.${skillId}.favoured.value`;
+                const current = foundry.utils.getProperty(this.actor, path) === true;
+                await this.actor.update({[path]: !current});
+            } else if (typeActor === 'npc') {
+                // NPC skills are items and the encoded value carries the skill name,
+                // matching how _rollSkill resolves them.
+                const skill = this.actor.items
+                    .filter(i => i.type === 'skill')
+                    .find(i => i.name === skillId);
+                if (!skill) {
+                    return;
+                }
+                const current = skill.system?.favoured?.value === true;
+                await skill.update({'system.favoured.value': !current});
+            }
+        }
+
+        async _toggleSongUsed(songId) {
+            const community = getCurrentCommunity();
+            // Songs belong to the community actor, which players usually cannot edit;
+            // bail out rather than letting the update fail on permissions.
+            if (!community?.isOwner) {
+                return;
+            }
+            const song = community.items.get(songId);
+            if (!song) {
+                return;
+            }
+            const current = song.system?.used?.value === true;
+            await song.update({'system.used.value': !current});
         }
 
         async _playSong(typeActor, songId) {

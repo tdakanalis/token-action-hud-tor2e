@@ -113,6 +113,7 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                             { ...groups.travel, nestId: 'community_travel' },
                             { ...groups.fellowship, nestId: 'community_fellowship' },
                             { ...groups.songs, nestId: 'community_songs' },
+                            { ...groups.eyeAwareness, nestId: 'community_eyeAwareness' },
                         ]
                     },
                     {
