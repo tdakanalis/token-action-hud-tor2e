@@ -40,6 +40,8 @@ export function getGroup(coreModule) {
         community: { id: 'community', name: coreModule.api.Utils.i18n('tor2e.actors.types.community.title'), type: 'system',  settings: {image: "systems/tor2e/assets/images/icons/actors/community.webp"} },
         travel: { id: 'travel', name: coreModule.api.Utils.i18n('tor2e.actors.sections.travel'), type: 'system' },
         fellowship: { id: 'fellowship', name: coreModule.api.Utils.i18n('tor2e.actors.stats.fellowshipPoints'), type: 'system' },
+        songs: { id: 'songs', name: coreModule.api.Utils.i18n('tor2e.actors.sections.songs'), type: 'system' },
+        eyeAwareness: { id: 'eyeAwareness', name: coreModule.api.Utils.i18n('tor2e.actors.stats.eyeAwareness'), type: 'system' },
 
         //include groups from the core module
         macros: { id: 'macros', name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.macros'), type: 'system',  settings: {image: "icons/svg/dice-target.svg"} }
@@ -64,6 +66,14 @@ export function getSettings(coreModule) {
             type: Boolean,
             default: true
         },
+        displayPlayerEyeAwareness: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerEyeAwareness.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.displayPlayerEyeAwareness.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: false
+        },
         addOverlayOnEffects: {
             name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.title'),
             hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.description'),
@@ -83,7 +93,5 @@ export const SKILLS = {
 
 
 export const STATS = {
-    ATTRIBUTE: ["strength", "heart", "wits"],
     STATURE: ["valour", "wisdom"],
-    RESOURCE: ["hope", "endurance", "shadow", "load", "travelLoad"],
 }

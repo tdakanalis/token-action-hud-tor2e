@@ -1,10 +1,12 @@
 import {
     capitalizeFirstLetter,
     generateDiamonds,
+    getActiveStatusIds,
     getControlledTokens,
+    getCurrentCommunity,
     getImage,
-    getSetting,
-    getTargetedTokens
+    getTargetedTokens,
+    isAllowedForUser
 } from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
 
@@ -20,11 +22,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async buildSystemActions(groupIds) {
             this.GROUP = getGroup(coreModule);
 
-            console.debug('game', game);
-            console.debug('actor', this.actor ? this.actor : this.actors);
-            console.debug('token', this.token ? this.token : this.tokens);
-            console.debug('action', this.action);
-
             if (this.actor) {
                 await this._loadStats();
                 await this._loadSkills();
@@ -34,10 +31,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 await this._loadCommunity();
             } else {
                 await this._loadCombatUtils();
-                if (game.user.isGM || getSetting("displayPlayerHealthEvents")) {
+                if (isAllowedForUser("displayPlayerHealthEvents")) {
                     await this._loadHealthStatusesForMultiple();
                 }
-                if (game.user.isGM || getSetting("displayPlayerEffects")) {
+                if (isAllowedForUser("displayPlayerEffects")) {
                     await this._loadEffectsForMultiple();
                 }
             }
@@ -183,6 +180,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const endurance = this?.actor.system?.endurance;
                 const hate = this.actor.system?.hate;
                 const enduranceValue = this.actor.extendedData?.getEndurance();
+                // The model always labels this stat "hate"; the system picks Hate vs
+                // Resolve from isHateMode at display time, so mirror that here.
+                const mentalLabel = this.actor.system?.isHateMode?.value === false
+                    ? 'tor2e.actors.stats.resolve'
+                    : (hate?.label ?? 'tor2e.actors.stats.hate');
 
                 this.addActions([
                     {
@@ -197,8 +199,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     {
                         id: "hate",
                         img: "systems/tor2e/assets/images/icons/actors/lore.webp",
-                        name: coreModule.api.Utils.i18n(hate?.label),
-                        description: coreModule.api.Utils.i18n(hate?.label),
+                        name: coreModule.api.Utils.i18n(mentalLabel),
+                        description: coreModule.api.Utils.i18n(mentalLabel),
                         encodedValue: ['attribute', 'adversary', 'hate'].join(this.delimiter),
                         info1: {text: hate?.value},
                         info2: { class: "hud-info", text: 'Max ' + hate?.max }
@@ -409,70 +411,47 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
         async _loadCombatAttributes() {
-            if(this.actor.type === 'character') {
-                Object.keys(this.actor.system.combatAttributes).forEach(p => {
-                    const proficiency = this.actor.system.combatAttributes[p];
-                    let name = '';
-                    let value = '';
-                    let bonus = '';
-                    let image = '';
-                    if (p === 'parry') {
-                        name = coreModule.api.Utils.i18n(proficiency.label);
-                        value = (this.actor.extendedData.getParryBonus() || 0);
-                        const shield = this.actor.items.filter(e => e.type === 'armour' && e.system.group.value === 'shield');
-                        bonus = '+' + (shield.length > 0 ? shield[0].system.protection.value : 0);
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else if (p === 'armour') {
-                        name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
-                        value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
-                        bonus = (this.actor.extendedData?.getHeadGearProtectionValue() || 0) + 'D';
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else {
-                        return;
-                    }
-                    this.addActions([{
-                        id: p,
-                        name: name,
-                        img: image,
-                        description: name,
-                        encodedValue: ['combatAttribute', 'character', p].join(this.delimiter),
-                        info1: {text: '' + value},
-                        info2: {text: '' + bonus},
-                    }], this.GROUP.combatAttributes)
-                })
-            } else if (this.actor.type === 'adversary') {
-                const combatAttributes = ["parry", "armour"];
-                Object.values(combatAttributes).forEach(p => {
-                    const proficiency = this.actor.system?.parry;
-                    let name = '';
-                    let value = '';
-                    let bonus = '';
-                    let image = '';
-                    if (p === 'parry') {
-                        name = coreModule.api.Utils.i18n(proficiency.label);
-                        value = (this.actor.extendedData.getParryBonus() || 0);
-                        const shield = this.actor.items.filter(e => e.type === 'armour' && e.system.group.value === 'shield');
-                        bonus = '+' + (shield.length > 0 ? shield[0].system.protection.value : 0);
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else if (p === 'armour') {
-                        name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
-                        value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
-                        bonus = (this.actor.extendedData?.getHeadGearProtectionValue() || 0) + 'D';
-                        image = 'systems/tor2e/assets/images/icons/armour.png';
-                    } else {
-                        return;
-                    }
-                    this.addActions([{
-                        id: p,
-                        name: name,
-                        img: image,
-                        description: name,
-                        encodedValue: ['combatAttribute', 'adversary', p].join(this.delimiter),
-                        info1: {text: '' + value},
-                        info2: {text: '' + bonus},
-                    }], this.GROUP.combatAttributes)
-                })
+            const actorType = this.actor.type;
+            if (actorType !== 'character' && actorType !== 'adversary') {
+                return;
             }
+
+            // Characters hold these under system.combatAttributes alongside entries the
+            // HUD does not render; adversaries keep parry at the top level instead.
+            const attributes = actorType === 'character'
+                ? Object.keys(this.actor.system?.combatAttributes ?? {}).filter(p => p === 'parry' || p === 'armour')
+                : ['parry', 'armour'];
+            const parrySource = actorType === 'character'
+                ? this.actor.system?.combatAttributes?.parry
+                : this.actor.system?.parry;
+            const image = 'systems/tor2e/assets/images/icons/armour.png';
+
+            attributes.forEach(p => {
+                let name;
+                let value;
+                let bonus;
+
+                if (p === 'parry') {
+                    const shield = this.actor.items.filter(e => e.type === 'armour' && e.system?.group?.value === 'shield');
+                    name = coreModule.api.Utils.i18n(parrySource?.label);
+                    value = (this.actor.extendedData?.getParryBonus() || 0);
+                    bonus = '+' + (shield.length > 0 ? shield[0].system?.protection?.value : 0);
+                } else {
+                    name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
+                    value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
+                    bonus = (this.actor.extendedData?.getHeadGearProtectionValue() || 0) + 'D';
+                }
+
+                this.addActions([{
+                    id: p,
+                    name: name,
+                    img: image,
+                    description: name,
+                    encodedValue: ['combatAttribute', actorType, p].join(this.delimiter),
+                    info1: {text: '' + value},
+                    info2: {text: '' + bonus},
+                }], this.GROUP.combatAttributes)
+            });
         }
 
         async _loadTraits() {
@@ -502,10 +481,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await this._loadRest();
             await this._loadOccupation();
 
-            if (game.user.isGM || getSetting("displayPlayerHealthEvents")) {
+            if (isAllowedForUser("displayPlayerHealthEvents")) {
                 await this._loadHealth();
             }
-            if (game.user.isGM || getSetting("displayPlayerEffects")) {
+            if (isAllowedForUser("displayPlayerEffects")) {
                 await this._loadEffects();
             }
         }
@@ -544,31 +523,43 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     }], this.GROUP.rest);
             }
         }
+        _getHealthStatuses(actors) {
+            const statuses = ['weary', 'wounded', 'poisoned'];
+            if (actors.some(actor => actor?.type === 'character')) {
+                statuses.push('miserable', 'daunted');
+            }
+            return statuses;
+        }
+
+        _buildHealthStatusAction(status, active, encodedValue) {
+            // Resolve icon and name from the system's own registration rather than
+            // rebuilding paths: 'daunted' ships as effects/dread.svg and has no
+            // tor2e.actors.stateOfHealth key.
+            const definition = CONFIG.statusEffects.find(e => e.id === status);
+            return {
+                id: status,
+                cssClass: active ? "stateOfHealth active" : "stateOfHealth",
+                img: definition?.img ?? ('systems/tor2e/assets/images/icons/effects/' + status + '.svg'),
+                name: coreModule.api.Utils.i18n(definition?.label ?? ('tor2e.actors.stateOfHealth.' + status)),
+                tooltip: coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + status),
+                encodedValue: encodedValue,
+            };
+        }
+
         async _loadHealth() {
             if (['character', 'adversary', 'lore', 'npc'].includes(this.actor.type)) {
-                const activeEffects = this.actor.effects.map(e => [...e?.statuses][0]);
-                const availableStatuses = ['weary', 'wounded', 'poisoned'];
-                if (this.actor.type === 'character') {
-                    availableStatuses.push('miserable');
-                }
-
-                availableStatuses.forEach(s => {
-                    const active = activeEffects.includes(s);
-                    const tooltip = coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + s);
-                    this.addActions([{
-                        id: s,
-                        cssClass: active ? "stateOfHealth active" : "stateOfHealth",
-                        img: 'systems/tor2e/assets/images/icons/effects/' + s + '.svg',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.stateOfHealth.' + s),
-                        tooltip: tooltip,
-                        encodedValue: ['health', this.actor.type, s].join(this.delimiter),
-                    }], this.GROUP.health);
+                const activeEffects = getActiveStatusIds(this.actor);
+                this._getHealthStatuses([this.actor]).forEach(s => {
+                    this.addActions([
+                        this._buildHealthStatusAction(s, activeEffects.includes(s),
+                            ['health', this.actor.type, s].join(this.delimiter))
+                    ], this.GROUP.health);
                 });
             }
         }
         async _loadEffects() {
             if (['character', 'adversary', 'lore', 'npc'].includes(this.actor.type)) {
-                const activeEffects = this.actor.effects.map(e => [...e?.statuses][0]);
+                const activeEffects = getActiveStatusIds(this.actor);
                 const allowedEffects = ["dead", "unconscious", "invisible"];
                 const effects = CONFIG.statusEffects.filter(e => allowedEffects.includes(e.id));
 
@@ -624,19 +615,72 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadCommunity() {
-            const defaultCommunity = game.settings.get("tor2e", "communityCurrentActor");
-            const community = game?.actors?.filter(a => a.type === "community" && a.id === defaultCommunity)?.[0];
+            const community = getCurrentCommunity();
             if (!community) {
                 return;
             }
             const members = community.system.members;
             const memberIds = members.filter(p => p?.id === this.actor?.id);
-            if (memberIds <= 0) {
+            if (memberIds.length <= 0) {
                 return;
             }
 
             await this._loadTravel(community);
             await this._loadFellowship(community);
+            await this._loadSongs(community);
+            await this._loadEyeAwareness(community);
+        }
+
+        async _loadEyeAwareness(community) {
+            if (this.actor.type !== 'character' || !isAllowedForUser("displayPlayerEyeAwareness")) {
+                return;
+            }
+            const eyeAwareness = community.system?.eyeAwareness;
+            if (!eyeAwareness) {
+                return;
+            }
+            const maxLabel = capitalizeFirstLetter(coreModule.api.Utils.i18n('tor2e.actors.stats.max'));
+            this.addActions([{
+                id: 'eyeAwareness',
+                img: 'systems/tor2e/assets/images/icons/shadow-weakness.png',
+                name: coreModule.api.Utils.i18n(eyeAwareness?.label),
+                // Display-only, like the other community entries: there is no
+                // system-side action to roll or advance the Eye.
+                encodedValue: ['community', 'character', 'eyeAwareness'].join(this.delimiter),
+                info1: { class: "hud-info", text: "" + (eyeAwareness?.value ?? 0) },
+                info2: { class: "hud-info", text: maxLabel + " " + (eyeAwareness?.max ?? 0) },
+            }], this.GROUP.eyeAwareness);
+        }
+
+        async _loadSongs(community) {
+            if (this.actor.type !== 'character') {
+                return;
+            }
+            const songs = community.items.filter(item => item.type === 'song');
+            songs.forEach(song => {
+                // Songs are grouped the way the community sheet groups them, by the
+                // song's own group value mapped through CONFIG.tor2e.songGroups.
+                const groupValue = song.system?.group?.value;
+                const groupLabel = CONFIG.tor2e?.songGroups?.[groupValue];
+                const group = {
+                    id: 'songs_' + (groupValue || 'songs'),
+                    name: groupLabel
+                        ? coreModule.api.Utils.i18n(groupLabel)
+                        : coreModule.api.Utils.i18n('tor2e.actors.sections.songs')
+                };
+
+                this.addGroup(group, {id: this.GROUP.songs.id}, true);
+
+                const used = song.system?.used?.value === true;
+                this.addActions([{
+                    id: song.id,
+                    cssClass: used ? "song active" : "song",
+                    name: song.name,
+                    img: getImage(song, ["systems/tor2e/assets/images/icons/default.webp"]),
+                    tooltip: song.system?.description?.value,
+                    encodedValue: ['song', this.actor.type, song.id].join(this.delimiter),
+                }], group);
+            });
         }
         async _loadTravel(community) {
             if (this.actor.type === 'character') {
@@ -719,8 +763,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _loadEffectsForMultiple() {
             const activeEffects = [];
-            for (const actor  of this.actors) {
-                activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
+            for (const actor of this.actors) {
+                activeEffects.push(...getActiveStatusIds(actor));
             }
 
             const allowedEffects = ["dead", "unconscious", "invisible"];
@@ -742,21 +786,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _loadHealthStatusesForMultiple() {
             const activeEffects = [];
-            for (const actor  of this.actors) {
-                activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
+            for (const actor of this.actors) {
+                activeEffects.push(...getActiveStatusIds(actor));
             }
-            const availableStatuses = ['weary', 'wounded', 'poisoned'];
-            availableStatuses.forEach(s => {
-                const active = activeEffects.includes(s);
-                const tooltip = coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + s);
-                this.addActions([{
-                    id: s,
-                    cssClass: active ? "stateOfHealth active" : "stateOfHealth",
-                    img: 'systems/tor2e/assets/images/icons/effects/' + s + '.svg',
-                    name: coreModule.api.Utils.i18n('tor2e.actors.stateOfHealth.' + s),
-                    tooltip: tooltip,
-                    encodedValue: ['multiple', 'multiple', s].join(this.delimiter),
-                }], this.GROUP.health);
+            this._getHealthStatuses(Array.from(this.actors ?? [])).forEach(s => {
+                this.addActions([
+                    this._buildHealthStatusAction(s, activeEffects.includes(s),
+                        ['multiple', 'multiple', s].join(this.delimiter))
+                ], this.GROUP.health);
             });
         }
     }

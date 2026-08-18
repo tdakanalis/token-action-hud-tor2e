@@ -5,8 +5,7 @@
   "version": "1.5.2",
   "compatibility": {
     "minimum": "12",
-    "verified": "13",
-    "maximum": "13"
+    "verified": "14"
   },
   "authors": [
     {
@@ -23,7 +22,7 @@
         "type": "system",
         "compatibility": {
           "minimum": "4",
-          "verified": "5"
+          "verified": "6"
         }
       }
     ],

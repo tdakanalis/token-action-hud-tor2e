@@ -1,6 +1,7 @@
 import {STATS} from "./constants.js";
 import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
-import {getControlledTokens, getSetting, getTargetedTokens} from "./utils.js";
+import Tor2eSong from "/systems/tor2e/modules/song.js";
+import {getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens, isAllowedForUser} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -10,8 +11,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         
         async handleActionClick(event, encodedValue) {
             const decoded = encodedValue.split("|");
-
-            console.debug(encodedValue);
 
             let typeAction = decoded[0]
             let typeActor = decoded[1]
@@ -23,11 +22,27 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             if (this.isRightClick) {
-                this._showItem(macroSubType);
+                // Songs live on the community actor rather than this.actor, so they
+                // need their own lookup to open a sheet.
+                if (typeAction === 'song') {
+                    this._showSong(macroType);
+                } else {
+                    this._showItem(macroSubType);
+                }
                 return;
             }
 
             if (this.isAlt || this.isCtrl || this.isShift) {
+                // Alt is the system's own modifier for these toggles: its sheet gates
+                // them behind tor2eUtilities.utilities.isAllowed, which is event.altKey.
+                if (this.isAlt && typeAction === 'skill') {
+                    await this._toggleFavouredSkill(typeActor, macroSubType);
+                    return;
+                }
+                if (this.isAlt && typeAction === 'song') {
+                    await this._toggleSongUsed(macroType);
+                    return;
+                }
                 if (typeActor === 'character' && (typeAction === "armour" || typeAction === "weapon")) {
                     const equipped = "system.equipped.value";
                     const dropped =  "system.dropped.value";
@@ -82,6 +97,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case 'macro':
                     await this._executeMacro(macroType)
                     break;
+                case 'song':
+                    await this._playSong(typeActor, macroType)
+                    break;
             }
         }
 
@@ -98,6 +116,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case 'weary':
                 case 'poisoned':
                 case 'wounded':
+                case 'miserable':
+                case 'daunted':
                     await this._toggleHealthStatus(typeAction);
                     break;
             }
@@ -106,6 +126,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _showItem(itemId) {
             if (this.isRenderItem()) {
                 await this.renderItem(this.actor, itemId)
+            }
+        }
+
+        async _showSong(songId) {
+            const community = getCurrentCommunity();
+            if (this.isRenderItem() && community) {
+                await this.renderItem(community, songId)
             }
         }
 
@@ -142,12 +169,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _setHealthStatus(typeActor, status) {
+            if (!isAllowedForUser("displayPlayerHealthEvents")) {
+                return;
+            }
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
                 await this.actor.toggleStatusEffectById(status);
             }
         }
 
         async _setEffect(typeActor, effect) {
+            if (!isAllowedForUser("displayPlayerEffects")) {
+                return;
+            }
             if (['character', 'adversary', 'lore', 'npc'].includes(typeActor)) {
                 const condition = CONFIG.statusEffects.find(e => e.id === effect);
                 const overlay = getSetting("addOverlayOnEffects");
@@ -219,6 +252,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleEffect(effect) {
+            if (!isAllowedForUser("displayPlayerEffects")) {
+                return;
+            }
             for (const actor of this.actors) {
                 const condition = CONFIG.statusEffects.find(e => e.id === effect);
                 const overlay = getSetting("addOverlayOnEffects");
@@ -227,6 +263,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleHealthStatus(status) {
+            if (!isAllowedForUser("displayPlayerHealthEvents")) {
+                return;
+            }
             for (const actor of this.actors) {
                 await actor.toggleStatusEffectById(status);
             }
@@ -241,6 +280,53 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async _executeMacro(macroId) {
             await game.macros.get(macroId).execute();
+        }
+
+        async _toggleFavouredSkill(typeActor, skillId) {
+            if (typeActor === 'character') {
+                const path = `system.commonSkills.${skillId}.favoured.value`;
+                const current = foundry.utils.getProperty(this.actor, path) === true;
+                await this.actor.update({[path]: !current});
+            } else if (typeActor === 'npc') {
+                // NPC skills are items and the encoded value carries the skill name,
+                // matching how _rollSkill resolves them.
+                const skill = this.actor.items
+                    .filter(i => i.type === 'skill')
+                    .find(i => i.name === skillId);
+                if (!skill) {
+                    return;
+                }
+                const current = skill.system?.favoured?.value === true;
+                await skill.update({'system.favoured.value': !current});
+            }
+        }
+
+        async _toggleSongUsed(songId) {
+            const community = getCurrentCommunity();
+            // Songs belong to the community actor, which players usually cannot edit;
+            // bail out rather than letting the update fail on permissions.
+            if (!community?.isOwner) {
+                return;
+            }
+            const song = community.items.get(songId);
+            if (!song) {
+                return;
+            }
+            const current = song.system?.used?.value === true;
+            await song.update({'system.used.value': !current});
+        }
+
+        async _playSong(typeActor, songId) {
+            if (typeActor !== 'character') {
+                return;
+            }
+            const community = getCurrentCommunity();
+            if (!community) {
+                return;
+            }
+            // Tor2eSong resolves the performing character itself: a Loremaster gets a
+            // member picker, a player uses their assigned character.
+            await new Tor2eSong({songId, user: game.user, community}).play();
         }
     }
 })

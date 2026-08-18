@@ -11,6 +11,10 @@
           "title": "Allow players to apply effects",
           "description": "Enable this option to allow players to apply effect statuses such as Dead, Unconscious, and Invisible to their characters."
         },
+        "displayPlayerEyeAwareness": {
+          "title": "Allow players to see Eye Awareness",
+          "description": "Enable this option to show the community's Eye Awareness in the Community menu for players. Disabled by default so the Loremaster decides whether the Eye's progress is known to the company."
+        },
         "addOverlayOnEffects": {
           "title": "Enable token overlay for effect statuses",
           "description": "Enable this option to apply a token overlay when applying effect statuses such as Dead, Unconscious, and Invisible."
@@ -56,7 +60,8 @@
           "weary": "1–3 on Success Dice count as 0",
           "miserable": "Sauron Eye counts as auto-fail",
           "poisoned": "Cannot rest; roll for Endurance loss daily.",
-          "wounded": "Risk knockout; recover 0 Endurance on short rest; recover STRENGTH Endurance on prolonged rest."
+          "wounded": "Risk knockout; recover 0 Endurance on short rest; recover STRENGTH Endurance on prolonged rest.",
+          "daunted": "Apply or remove the Daunted condition"
         }
       }
     }

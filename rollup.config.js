@@ -1,10 +1,10 @@
-import { terser } from 'rollup-plugin-terser'
+import terser from '@rollup/plugin-terser'
 import multi from '@rollup/plugin-multi-entry'
 import copy from 'rollup-plugin-copy'
 
 export default [
     {
-        external: ['/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js', '/systems/tor2e/modules/utilities.js', '/systems/tor2e/modules/combat/Tor2eStance.js'],
+        external: ['/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js', '/systems/tor2e/modules/utilities.js', '/systems/tor2e/modules/combat/Tor2eStance.js', '/systems/tor2e/modules/song.js'],
         input: {
             include: [
                 'scripts/*.js'

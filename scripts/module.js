@@ -112,6 +112,8 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
                         groups: [
                             { ...groups.travel, nestId: 'community_travel' },
                             { ...groups.fellowship, nestId: 'community_fellowship' },
+                            { ...groups.songs, nestId: 'community_songs' },
+                            { ...groups.eyeAwareness, nestId: 'community_eyeAwareness' },
                         ]
                     },
                     {
@@ -130,14 +132,21 @@ Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
         async registerSettings(onChangeFunction) {
             const settings = getSettings(coreModule);
             for (const [key, value] of Object.entries(settings)) {
-                game.settings.register(MODULE_ID, key, value);
+                // Core only rebuilds the HUD on closeSettingsConfig when a setting
+                // change marked it pending, and that only happens through this
+                // callback. Without it a Loremaster's change is not applied until
+                // some unrelated hook happens to trigger a rebuild.
+                game.settings.register(MODULE_ID, key, {
+                    ...value,
+                    onChange: newValue => onChangeFunction(key, newValue)
+                });
             }
         }
     }
 
     const module = game.modules.get(MODULE_ID);
     module.api = {
-        requiredCoreModuleVersion: '2.0',
+        requiredCoreModuleVersion: '2',
         SystemManager: TOR2ESystemManager
     }
     Hooks.call('tokenActionHudSystemReady', module)
