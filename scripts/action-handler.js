@@ -183,6 +183,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const endurance = this?.actor.system?.endurance;
                 const hate = this.actor.system?.hate;
                 const enduranceValue = this.actor.extendedData?.getEndurance();
+                // The model always labels this stat "hate"; the system picks Hate vs
+                // Resolve from isHateMode at display time, so mirror that here.
+                const mentalLabel = this.actor.system?.isHateMode?.value === false
+                    ? 'tor2e.actors.stats.resolve'
+                    : (hate?.label ?? 'tor2e.actors.stats.hate');
 
                 this.addActions([
                     {
@@ -197,8 +202,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     {
                         id: "hate",
                         img: "systems/tor2e/assets/images/icons/actors/lore.webp",
-                        name: coreModule.api.Utils.i18n(hate?.label),
-                        description: coreModule.api.Utils.i18n(hate?.label),
+                        name: coreModule.api.Utils.i18n(mentalLabel),
+                        description: coreModule.api.Utils.i18n(mentalLabel),
                         encodedValue: ['attribute', 'adversary', 'hate'].join(this.delimiter),
                         info1: {text: hate?.value},
                         info2: { class: "hud-info", text: 'Max ' + hate?.max }
@@ -544,25 +549,37 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     }], this.GROUP.rest);
             }
         }
+        _getHealthStatuses(actors) {
+            const statuses = ['weary', 'wounded', 'poisoned'];
+            if (actors.some(actor => actor?.type === 'character')) {
+                statuses.push('miserable', 'daunted');
+            }
+            return statuses;
+        }
+
+        _buildHealthStatusAction(status, active, encodedValue) {
+            // Resolve icon and name from the system's own registration rather than
+            // rebuilding paths: 'daunted' ships as effects/dread.svg and has no
+            // tor2e.actors.stateOfHealth key.
+            const definition = CONFIG.statusEffects.find(e => e.id === status);
+            return {
+                id: status,
+                cssClass: active ? "stateOfHealth active" : "stateOfHealth",
+                img: definition?.img ?? ('systems/tor2e/assets/images/icons/effects/' + status + '.svg'),
+                name: coreModule.api.Utils.i18n(definition?.label ?? ('tor2e.actors.stateOfHealth.' + status)),
+                tooltip: coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + status),
+                encodedValue: encodedValue,
+            };
+        }
+
         async _loadHealth() {
             if (['character', 'adversary', 'lore', 'npc'].includes(this.actor.type)) {
                 const activeEffects = this.actor.effects.map(e => [...e?.statuses][0]);
-                const availableStatuses = ['weary', 'wounded', 'poisoned'];
-                if (this.actor.type === 'character') {
-                    availableStatuses.push('miserable');
-                }
-
-                availableStatuses.forEach(s => {
-                    const active = activeEffects.includes(s);
-                    const tooltip = coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + s);
-                    this.addActions([{
-                        id: s,
-                        cssClass: active ? "stateOfHealth active" : "stateOfHealth",
-                        img: 'systems/tor2e/assets/images/icons/effects/' + s + '.svg',
-                        name: coreModule.api.Utils.i18n('tor2e.actors.stateOfHealth.' + s),
-                        tooltip: tooltip,
-                        encodedValue: ['health', this.actor.type, s].join(this.delimiter),
-                    }], this.GROUP.health);
+                this._getHealthStatuses([this.actor]).forEach(s => {
+                    this.addActions([
+                        this._buildHealthStatusAction(s, activeEffects.includes(s),
+                            ['health', this.actor.type, s].join(this.delimiter))
+                    ], this.GROUP.health);
                 });
             }
         }
@@ -745,18 +762,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             for (const actor  of this.actors) {
                 activeEffects.push(...actor.effects.map(e => [...e?.statuses][0]))
             }
-            const availableStatuses = ['weary', 'wounded', 'poisoned'];
-            availableStatuses.forEach(s => {
-                const active = activeEffects.includes(s);
-                const tooltip = coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + s);
-                this.addActions([{
-                    id: s,
-                    cssClass: active ? "stateOfHealth active" : "stateOfHealth",
-                    img: 'systems/tor2e/assets/images/icons/effects/' + s + '.svg',
-                    name: coreModule.api.Utils.i18n('tor2e.actors.stateOfHealth.' + s),
-                    tooltip: tooltip,
-                    encodedValue: ['multiple', 'multiple', s].join(this.delimiter),
-                }], this.GROUP.health);
+            this._getHealthStatuses(Array.from(this.actors ?? [])).forEach(s => {
+                this.addActions([
+                    this._buildHealthStatusAction(s, activeEffects.includes(s),
+                        ['multiple', 'multiple', s].join(this.delimiter))
+                ], this.GROUP.health);
             });
         }
     }

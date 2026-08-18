@@ -98,6 +98,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 case 'weary':
                 case 'poisoned':
                 case 'wounded':
+                case 'miserable':
+                case 'daunted':
                     await this._toggleHealthStatus(typeAction);
                     break;
             }

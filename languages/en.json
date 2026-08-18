@@ -56,7 +56,8 @@
           "weary": "1–3 on Success Dice count as 0",
           "miserable": "Sauron Eye counts as auto-fail",
           "poisoned": "Cannot rest; roll for Endurance loss daily.",
-          "wounded": "Risk knockout; recover 0 Endurance on short rest; recover STRENGTH Endurance on prolonged rest."
+          "wounded": "Risk knockout; recover 0 Endurance on short rest; recover STRENGTH Endurance on prolonged rest.",
+          "daunted": "Apply or remove the Daunted condition"
         }
       }
     }
