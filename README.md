@@ -7,6 +7,9 @@ This module adds a repositionable HUD for The One Ring 2nd Edition, giving you q
 ![LM Combat Utils](.github/readme/lm-combat-utils.gif)
 ![Equip, Unequip, Drop](.github/readme/equip-unequip-drop.gif)
 
+# User Manual
+Read the [User Manual and Installation Guide (PDF)](https://github.com/tdakanalis/token-action-hud-tor2e/blob/main/docs/token-action-hud-tor2e-manual.pdf) for setup instructions and a full reference to every HUD action.
+
 # Features
 - Roll dice directly from the HUD without opening your character sheet.
 - Use items from the HUD, or right-click an item to open its sheet.
