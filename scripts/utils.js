@@ -3,21 +3,15 @@ import {MODULE_ID} from "./constants.js";
 export function getTargetedTokens() {
     // Always a Set: both callers use .has() on the result, and Foundry's Set#map
     // returns a Set, so the fallback has to match rather than being an array.
-    if (!game || !game.user || !game.user.targets) {
-        return new Set();
-    }
-    return game.user.targets.map(token => token.id);
+    return new Set(Array.from(globalThis.game?.user?.targets ?? [], token => token.id));
 }
 
 export function getControlledTokens() {
-    if (!game || !game.canvas) {
-        return [];
-    }
-    return game.canvas.tokens?.controlled ?? [];
+    return globalThis.canvas?.tokens?.controlled ?? globalThis.game?.canvas?.tokens?.controlled ?? [];
 }
 
 export function capitalizeFirstLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
+    return string ? string[0].toUpperCase() + string.slice(1) : '';
 }
 
 export function generateDiamonds(count) {
@@ -38,11 +32,9 @@ export function getSetting(label) {
 }
 
 export function getActiveStatusIds(actor) {
-    // An effect can carry several statuses; the first one identifies it for the HUD.
-    // Spreading needs its own guard because `effect?.statuses` still yields undefined,
-    // and spreading undefined throws.
     return Array.from(actor?.effects ?? [])
-        .map(effect => [...(effect?.statuses ?? [])][0])
+        .filter(effect => !effect.disabled && !effect.isSuppressed)
+        .flatMap(effect => [...(effect?.statuses ?? [])])
         .filter(Boolean);
 }
 
@@ -59,12 +51,11 @@ export function getCurrentCommunity() {
 }
 
 export function getImage(entity, defaultImages = []) {
-    defaultImages.push("icons/svg/mystery-man.svg");
     let result = "";
     if (game.settings.get("token-action-hud-core", "displayIcons")) {
         result = (typeof entity === "string")
             ? entity
             : entity?.img ?? entity?.icon ?? "";
     }
-    return !defaultImages.includes(result) ? result : "";
+    return ![...defaultImages, "icons/svg/mystery-man.svg"].includes(result) ? result : "";
 }

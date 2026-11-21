@@ -1,0 +1,12 @@
+{
+  "results": [
+    {
+      "name": "Real right-click opens menu without rolling and preserves source HUD",
+      "passed": true
+    }
+  ],
+  "versions": {
+    "foundry": "14.367",
+    "system": "6.3.0"
+  }
+}

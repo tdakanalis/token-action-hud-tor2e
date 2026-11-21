@@ -1,12 +1,14 @@
 import { TOR2EActionHandler } from './action-handler.js'
 import { TOR2ERollHandler } from './roll-handler.js'
 import {getGroup, getSettings, MODULE_ID} from "./constants.js";
+import {registerInteractions} from './interaction.js';
 
 export let TOR2ESystemManager = null
 
 export let DEFAULTS = null
 
 Hooks.on('tokenActionHudCoreApiReady', async (coreModule) => {
+    registerInteractions();
     TOR2ESystemManager = class TOR2ESystemManager extends coreModule.api.SystemManager {
         /** @override */
         getActionHandler() {

@@ -21,10 +21,70 @@
         }
       },
       "groups": {
+        "activeEffects": "Active effects",
+        "combatTasks": "Combat tasks",
+        "engagements": "Engagements",
+        "groupConditions": "Group conditions",
+        "members": "Company",
+        "journeys": "Journeys & mounts",
+        "fellowshipPhase": "Fellowship phase",
+        "integrations": "Loremaster tools",
         "stats": "Stats",
         "advancement": "Advancement",
         "stances": "Stances",
         "unequipped": "Unequipped"
+      },
+      "states": {
+        "inactive": "Inactive",
+        "active": "Active",
+        "disabled": "Disabled",
+        "suppressed": "Suppressed"
+      },
+      "stats": {
+        "cost": "Cost",
+        "damage": "Damage",
+        "injury": "Injury"
+      },
+      "actions": {
+        "toggleMagical": "Toggle magical skill",
+        "openActor": "Open actor sheet",
+        "openCommunity": "Open company sheet",
+        "recoverHope": "Recover Hope from Fellowship",
+        "journeyEvent": "Roll journey event",
+        "journeyEventHint": "Open the system's journey event roll. Use the journey log sheet to record events.",
+        "openItem": "Open sheet",
+        "share": "Share description in chat",
+        "equip": "Equip",
+        "unequip": "Unequip",
+        "drop": "Drop",
+        "toggleFavoured": "Toggle favoured",
+        "increaseRank": "Increase rank",
+        "decreaseRank": "Decrease rank",
+        "rankHint": "Alt-click the diamonds to increase rank; Alt+Shift-click to decrease. Right-click for named rank controls.",
+        "toggleUsed": "Toggle song used",
+        "toggleAbility": "Toggle ability active",
+        "abilityResource": "Manage Hate / Resolve",
+        "toggleEffect": "Enable / disable effect",
+        "combatTasks": "Choose a combat task",
+        "clearTargets": "Clear targets",
+        "engageSelected": "Engage selected combatants",
+        "apply": "Apply",
+        "remove": "Remove",
+        "council": "Council / skill endeavour",
+        "companyReport": "Company report",
+        "physicalReport": "Physical health report",
+        "mentalReport": "Mental health report",
+        "experienceReport": "Experience report",
+        "awardExperience": "Award session experience",
+        "conditionWarning": "The system reports a condition threshold. Open the sheet to review and apply the appropriate condition.",
+        "check": {
+          "weary": "Review Weary condition",
+          "miserable": "Review Miserable condition"
+        },
+        "hopeRecoveryPermission": "Rest and Hope recovery require ownership of your character and the active Community. Ask the Loremaster to perform this action; the system cannot safely spend Fellowship Points with your current permissions.",
+        "failed": "The action could not be completed. Check the notification or console for details.",
+        "rollHint": "Click to open the system roll dialog. Right-click for secondary actions; keyboard: Shift+F10.",
+        "resourceHint": "Click to open the system's controls for this value."
       },
       "combat": {
         "stance": {

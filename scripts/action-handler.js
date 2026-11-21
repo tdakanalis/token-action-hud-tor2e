@@ -3,12 +3,12 @@ import {
     generateDiamonds,
     getActiveStatusIds,
     getControlledTokens,
-    getCurrentCommunity,
     getImage,
     getTargetedTokens,
     isAllowedForUser
 } from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
+import {communityFor, label, loadFeatures} from './features.js';
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
 
@@ -17,6 +17,31 @@ export let TOR2EActionHandler = null
 Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
     // Extends TAH Core's ActionHandler class and builds system-defined actions for the HUD.
     TOR2EActionHandler = class TOR2EActionHandler extends coreModule.api.ActionHandler {
+
+        addActions(actions, group) {
+            const contextMenus = Number(game.modules.get('token-action-hud-core')?.version?.split('.')[1] ?? 0) >= 1;
+            return super.addActions(actions.map(action => {
+                const [type, command, id] = action.encodedValue?.split(this.delimiter) ?? [];
+                const ordinaryMenu = ['weapon', 'armour', 'skill', 'song', 'traits', 'miscellaneous', 'health', 'effect'].includes(type)
+                    || (type === 'proficiency' && id !== 'brawling');
+                const documentMenu = type === 'hud' && (command === 'task' || command === 'roleRoll'
+                    || (command === 'sheet' && (id?.includes('.Item.') || id?.startsWith('Item.') || id?.includes('.ActiveEffect.'))));
+                const hasContextMenu = contextMenus && (ordinaryMenu || documentMenu);
+                const hint = ['skill', 'weapon', 'stature', 'proficiency', 'combatAttribute'].includes(type)
+                    ? label('actions.rollHint') : ['resource', 'attribute', 'advancement'].includes(type)
+                        ? label('actions.resourceHint') : undefined;
+                const info = Object.fromEntries(['info1', 'info2', 'info3'].map(key => [key,
+                    action[key] && typeof action[key].text === 'number' ? {...action[key], text: String(action[key].text)} : action[key]
+                ]));
+                return {...action,
+                    ...info,
+                    tooltip: action.tooltip || hint,
+                    cssClass: `tor2e-action ${action.cssClass ?? ''}`,
+                    info1: ['skill', 'proficiency'].includes(type) ? {...info.info1, title: label('actions.rankHint')} : info.info1,
+                    hasContextMenu
+                };
+            }), group);
+        }
 
         /** @override */
         async buildSystemActions(groupIds) {
@@ -38,14 +63,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     await this._loadEffectsForMultiple();
                 }
             }
+            await loadFeatures(this);
             await this._loadMacros();
         }
 
         async _loadMacros() {
-            const macros = game.macros.filter(macro => {
-                const { ownership } = macro;
-                return ownership[game.userId] ? ownership[game.userId] > 0 : ownership.default > 0;
-            });
+            const macros = game.macros.filter(macro => macro.canExecute);
 
             for (const macro of macros) {
                 const group = {
@@ -93,8 +116,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             } else if(this.actor.type === 'adversary') {
                 let group = this.GROUP.attributes;
                 const attributeLevel = this.actor.extendedData?.getAttributeLevel();
-                const might = this.actor.system?.might.value;
-                const maxMight = this.actor.system?.might.max;
+                const might = this.actor.system?.might?.value ?? 0;
+                const maxMight = this.actor.system?.might?.max ?? 0;
 
                 this.addActions([
                     {
@@ -149,7 +172,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         image = 'travel-gear.png';
                     } else if (el === 'shadow') {
                         name = coreModule.api.Utils.i18n('tor2e.actors.stats.shadow');
-                        value = "" + (attribute.shadowScars.value + attribute.temporary.value);
+                        value = "" + (Number(attribute.shadowScars?.value ?? 0)
+                            + Number(attribute.temporary?.value ?? 0) + Number(attribute.taint?.value ?? 0));
                         image = 'actors/lore.webp';
                     } else if (el === 'hope') {
                         name = coreModule.api.Utils.i18n(attribute.label);
@@ -305,7 +329,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const availableSkills = new Map(
                     this.actor.items
                         .filter(e => e.type === 'skill')
-                        .map(s => [s.name, s])
+                        .map(s => [s.id, s])
                 );
                 Array.from(availableSkills.keys()).forEach( el => {
                     const skill = availableSkills.get(el);
@@ -316,7 +340,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     const action = {
                         id: el,
                         img: skill.img,
-                        name: el,
+                        name: skill.name,
                         tooltip: skill?.system.description.value,
                         encodedValue: ['skill', this.actor.type, group.id, el].join(this.delimiter),
                         info1: { text: generateDiamonds(skill.system.value) },
@@ -361,10 +385,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         name: weapon.name,
                         img: weapon.img,
                         tooltip: weapon?.system?.description?.value,
-                        encodedValue: ['weapon', this.actor.type, weapon.name, weapon.id].join(this.delimiter),
+                        encodedValue: ['weapon', this.actor.type, '', weapon.id].join(this.delimiter),
                         info1: {class: "hud-info", text: generateDiamonds(proficiency?.value ?? 0)},
-                        info2: {class: "hud-info", text: damage},
-                        info3: {class: "hud-info", text: injury + (proficiency?.favoured?.value ?
+                        info2: {class: "hud-info", text: label('stats.damage') + ' ' + damage},
+                        info3: {class: "hud-info", text: label('stats.injury') + ' ' + injury + (proficiency?.favoured?.value ?
                                 '  ' + coreModule.api.Utils.i18n(proficiency?.favoured?.label) : '')},
                     };
 
@@ -387,7 +411,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         cssClass: "armour",
                         img: armour.img,
                         description: armour.name,
-                        encodedValue: ['armour', 'character', armour.name, armour.id].join(this.delimiter),
+                        encodedValue: ['armour', 'character', '', armour.id].join(this.delimiter),
                         info1: {text: protection},
                     }], group)
                 })
@@ -395,9 +419,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
         async _loadCombatProficiencies() {
             if(this.actor.type === 'character') {
-                const proficiencies = this.actor.extendedData?.getCombatProficiencies();
-                proficiencies.keys().forEach(p => {
-                    const proficiency = proficiencies.get(p);
+                const proficiencies = this.actor.extendedData?.getCombatProficiencies() ?? new Map();
+                for (const [p, proficiency] of proficiencies) {
                     const name = coreModule.api.Utils.i18n(proficiency.label);
                     this.addActions([{
                         id: p,
@@ -407,7 +430,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         encodedValue: ['proficiency', 'character', p].join(this.delimiter),
                         info1: {text: generateDiamonds(proficiency.value)},
                     }], this.GROUP.combatProficiences)
-                })
+                }
             }
         }
         async _loadCombatAttributes() {
@@ -432,10 +455,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 let bonus;
 
                 if (p === 'parry') {
-                    const shield = this.actor.items.filter(e => e.type === 'armour' && e.system?.group?.value === 'shield');
+                    const shield = this.actor.extendedData?.getShieldUsed?.();
                     name = coreModule.api.Utils.i18n(parrySource?.label);
                     value = (this.actor.extendedData?.getParryBonus() || 0);
-                    bonus = '+' + (shield.length > 0 ? shield[0].system?.protection?.value : 0);
+                    bonus = '+' + (shield?.system?.protection?.value ?? 0);
                 } else {
                     name = coreModule.api.Utils.i18n('tor2e.rolls.protection');
                     value = (this.actor.extendedData?.getArmourProtectionValue() || 0) + 'D';
@@ -465,13 +488,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const items = this.actor.items.filter(e => e.type === type && (!subType || e?.system?.group?.value === subType));
             items.forEach( item => {
                 let description = item.system.description.value;
+                const fellAbility = type === 'fell-ability';
                 this.addActions([{
                     id: item.id,
                     name: item.name,
                     img: item.img,
                     tooltip: description,
+                    cssClass: fellAbility ? `toggle ${item.system.active?.value ? 'active' : ''}` : '',
                     encodedValue: ['traits', this.actor.type, subType || type, item.id].join(this.delimiter),
-                    info1: {class: "hud-info", text: '' + (this.actor.type === 'adversary' && type === 'fell-ability' ? item?.system?.cost?.value : '')}
+                    info1: {class: "hud-info", text: fellAbility ? label('stats.cost') + ' ' + (item.system.cost?.value ?? 0) : ''},
+                    info2: {text: fellAbility ? label(item.system.active?.value ? 'states.active' : 'states.inactive') : ''}
                 }], group)
             })
         }
@@ -538,7 +564,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const definition = CONFIG.statusEffects.find(e => e.id === status);
             return {
                 id: status,
-                cssClass: active ? "stateOfHealth active" : "stateOfHealth",
+                cssClass: active ? "stateOfHealth toggle active" : "stateOfHealth toggle",
                 img: definition?.img ?? ('systems/tor2e/assets/images/icons/effects/' + status + '.svg'),
                 name: coreModule.api.Utils.i18n(definition?.label ?? ('tor2e.actors.stateOfHealth.' + status)),
                 tooltip: coreModule.api.Utils.i18n("tokenActionHud.tor2e.health.status." + status),
@@ -568,9 +594,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     const active = activeEffects?.includes(effect.id);
                     actions.push({
                         id: effect.id,
-                        cssClass: active ? "effects active" : "effects",
-                        name: coreModule.api.Utils.i18n(effect.name),
-                        img: effect.img,
+                        cssClass: active ? "effects toggle active" : "effects toggle",
+                        name: coreModule.api.Utils.i18n(effect.label ?? effect.name),
+                        img: effect.img ?? effect.icon,
                         encodedValue: ['effect', this.actor.type, effect.id].join(this.delimiter),
                     });
                 })
@@ -581,6 +607,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadOccupation() {
             if (['lore', 'npc'].includes(this.actor.type)) {
                 const occupation = this.actor?.system?.occupation?.value;
+                if (!occupation) return;
                 this.addActions([{
                     id: occupation,
                     cssClass: "occupation",
@@ -594,7 +621,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async _loadStances() {
             if (this.actor.type === 'character') {
                 if (this?.actor?.inCombat) {
-                    const stances = this.token?.combatant ? Tor2eTokenHudExtension._buildStances(this.token?.combatant)?.stances : [];
+                    const combatant = this.token?.document?.findCombat?.()?.combatant ?? this.token?.combatant;
+                    const stances = combatant ? (Tor2eTokenHudExtension._buildStances(combatant)?.stances ?? []) : [];
                     stances.forEach(s => {
                         const bonusLabel = 'tokenActionHud.' +  s?.stance?.title?.replace(".label", ".bonus");
                         const taskLabel = 'tokenActionHud.' +  s?.stance?.title?.replace(".label", ".task");
@@ -602,7 +630,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
                         this.addActions([{
                             id: s?.stance?.class,
-                            cssClass: s?.isActive ? "stance active" : "stance",
+                            cssClass: s?.isActive ? "stance toggle active" : "stance toggle",
                             img: s?.stance?.logo,
                             name: coreModule.api.Utils.i18n(s?.stance?.title),
                             tooltip: tooltip,
@@ -615,16 +643,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadCommunity() {
-            const community = getCurrentCommunity();
+            const community = communityFor(this.actor);
             if (!community) {
                 return;
             }
-            const members = community.system.members;
-            const memberIds = members.filter(p => p?.id === this.actor?.id);
-            if (memberIds.length <= 0) {
-                return;
-            }
-
             await this._loadTravel(community);
             await this._loadFellowship(community);
             await this._loadSongs(community);
@@ -632,7 +654,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadEyeAwareness(community) {
-            if (this.actor.type !== 'character' || !isAllowedForUser("displayPlayerEyeAwareness")) {
+            if (!['character', 'community'].includes(this.actor.type) || !isAllowedForUser("displayPlayerEyeAwareness")) {
                 return;
             }
             const eyeAwareness = community.system?.eyeAwareness;
@@ -653,7 +675,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadSongs(community) {
-            if (this.actor.type !== 'character') {
+            if (!['character', 'community'].includes(this.actor.type)) {
                 return;
             }
             const songs = community.items.filter(item => item.type === 'song');
@@ -674,7 +696,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const used = song.system?.used?.value === true;
                 this.addActions([{
                     id: song.id,
-                    cssClass: used ? "song active" : "song",
+                    cssClass: used ? "song toggle active" : "song toggle",
                     name: song.name,
                     img: getImage(song, ["systems/tor2e/assets/images/icons/default.webp"]),
                     tooltip: song.system?.description?.value,
@@ -683,8 +705,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             });
         }
         async _loadTravel(community) {
-            if (this.actor.type === 'character') {
-                const travel = community.system.travel;
+            if (this.actor.type === 'character' && !game.settings.get('tor2e', 'soloMode')) {
+                const travel = community.system.travel ?? {};
                 const labels = {
                     "hunters": "hunting",
                     "guide": "travel",
@@ -711,7 +733,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadFellowship(community) {
-            if (this.actor.type === 'character') {
+            if (['character', 'community'].includes(this.actor.type)) {
                 const fellowship = community.system.fellowshipPoints;
                 const maxLabel = capitalizeFirstLetter(coreModule.api.Utils.i18n('tor2e.actors.stats.max'));
                 this.addActions([{
@@ -731,6 +753,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
 
             const controlledTokens = getControlledTokens();
+            if (!controlledTokens.length) return;
             const toggleCombatId = "toggleCombat";
             const toggleCombatName = controlledTokens.every(token => token.inCombat)
                 ? game.i18n.localize("tokenActionHud.tor2e.combat.removeFromCombat")
@@ -775,9 +798,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const active = activeEffects?.includes(effect.id);
                 actions.push({
                     id: effect.id,
-                    cssClass: active ? "effects active" : "effects",
-                    name: coreModule.api.Utils.i18n(effect.name),
-                    img: effect.img,
+                    cssClass: active ? "effects toggle active" : "effects toggle",
+                    name: coreModule.api.Utils.i18n(effect.label ?? effect.name),
+                    img: effect.img ?? effect.icon,
                     encodedValue: ['multiple', 'multiple', effect.id].join(this.delimiter),
                 });
             })
