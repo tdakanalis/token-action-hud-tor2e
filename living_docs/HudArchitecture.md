@@ -1,6 +1,6 @@
 # HUD architecture and audit
 
-This describes the release candidate, including the updated guide and PDF.
+This describes the release, including the current online user guide.
 
 ## Ownership of behavior
 
@@ -54,6 +54,6 @@ Floating Community opens rightward from Core’s anchor with a maximum width of 
 - Core 2.0 does not expose the newer context menu hook. Existing modifier controls remain available; new menu enhancements are capability-gated.
 - The upstream Hope bug remains on the native sheet. HUD users without Community ownership must ask the Loremaster to rest/recover through the HUD; changing that system behavior was explicitly excluded.
 - Active flags, document fields and display summaries do not constitute automation of descriptive abilities, combat task consequences or journey-log recording.
-- The user guide and PDF are updated for this release. Merging to `main` triggers the existing GitHub and Foundry package release workflow.
+- The online user guide covers this release. The original illustrated PDF is preserved as the version 1.6 manual.
 
 See [developer validation](../testing/README.md) and `testing/results` for commands and individual results. No licensed Foundry files or campaign data are included.
