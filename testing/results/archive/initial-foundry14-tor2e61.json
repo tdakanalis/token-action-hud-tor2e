@@ -1,0 +1,90 @@
+{
+  "results": [
+    {
+      "name": "Build character",
+      "passed": true
+    },
+    {
+      "name": "Build adversary",
+      "passed": true
+    },
+    {
+      "name": "Build npc",
+      "passed": true
+    },
+    {
+      "name": "Build lore",
+      "passed": true
+    },
+    {
+      "name": "Build community",
+      "passed": true
+    },
+    {
+      "name": "Native character skill dialog",
+      "passed": true
+    },
+    {
+      "name": "Native proficiency dialog",
+      "passed": true
+    },
+    {
+      "name": "Native Valour dialog",
+      "passed": true
+    },
+    {
+      "name": "Native Protection dialog",
+      "passed": true
+    },
+    {
+      "name": "Native NPC skill dialog",
+      "passed": true
+    },
+    {
+      "name": "Native rest dialog cancellation",
+      "passed": true
+    },
+    {
+      "name": "Equipment changes and effects",
+      "passed": true
+    },
+    {
+      "name": "Favoured skill toggle and restore",
+      "passed": true
+    },
+    {
+      "name": "Native trait chat card",
+      "passed": true
+    },
+    {
+      "name": "Native journey-role dialog",
+      "passed": true
+    },
+    {
+      "name": "Native company sheet navigation",
+      "passed": true
+    },
+    {
+      "name": "Native Fellowship Hope recovery dialog",
+      "passed": true
+    },
+    {
+      "name": "Native journey event dialog",
+      "passed": true
+    },
+    {
+      "name": "Execute permitted native Macro",
+      "passed": true
+    },
+    {
+      "error": "Engagement not set.",
+      "name": "System engagement, stance and attack dialog",
+      "passed": false
+    }
+  ],
+  "versions": {
+    "core": "2.1.1",
+    "foundry": "14.367",
+    "system": "6.1.0"
+  }
+}

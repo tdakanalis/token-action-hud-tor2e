@@ -1,0 +1,328 @@
+{
+  "results": [
+    {
+      "name": "Group artwork retains its natural aspect ratio",
+      "passed": true
+    },
+    {
+      "name": "Action artwork fits its slot without distortion",
+      "passed": true
+    },
+    {
+      "name": "Toggle controls expose pressed state without depending on color",
+      "passed": true
+    },
+    {
+      "name": "Rendered normal, active and disabled colors are opaque and readable",
+      "passed": true
+    },
+    {
+      "name": "Explicit light, high-contrast and custom palettes remain separate",
+      "passed": true
+    },
+    {
+      "name": "Independent HUD palette stays stable across character sheet themes",
+      "passed": true
+    },
+    {
+      "name": "Travel assignment wraps inside a narrow panel without clipping",
+      "passed": true
+    },
+    {
+      "name": "Ordinary controls retain their existing icon slots",
+      "passed": true
+    },
+    {
+      "name": "Context menu uses the same palette as its source HUD",
+      "passed": true
+    }
+  ],
+  "samples": [
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "normal label"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "normal rank"
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "active label"
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "active rank"
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "active border"
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "active checkmark"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(181, 181, 172)",
+      "minimum": 4.5,
+      "name": "disabled label"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "disabled rank"
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "hover label"
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "hover detail"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "muted text"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "focus ring"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-light surface label"
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-light hover label"
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-light active label"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-dark surface label"
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-dark hover label"
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-dark active label"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "context menu text"
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "context menu icon"
+    }
+  ],
+  "versions": {
+    "foundry": "14.367",
+    "system": "6.3.0"
+  },
+  "contrasts": [
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "normal label",
+      "ratio": 13.049166612964505,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "normal rank",
+      "ratio": 7.240171426141591,
+      "passed": true
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "active label",
+      "ratio": 10.886229765760616,
+      "passed": true
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "active rank",
+      "ratio": 6.040092216323245,
+      "passed": true
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "active border",
+      "ratio": 6.040092216323245,
+      "passed": true
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "active checkmark",
+      "ratio": 6.040092216323245,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(181, 181, 172)",
+      "minimum": 4.5,
+      "name": "disabled label",
+      "ratio": 7.224792240272872,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "disabled rank",
+      "ratio": 7.240171426141591,
+      "passed": true
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "hover label",
+      "ratio": 10.41574605011211,
+      "passed": true
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "hover detail",
+      "ratio": 10.41574605011211,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 4.5,
+      "name": "muted text",
+      "ratio": 7.240171426141591,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "focus ring",
+      "ratio": 7.240171426141591,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-light surface label",
+      "ratio": 13.049166612964505,
+      "passed": true
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-light hover label",
+      "ratio": 10.41574605011211,
+      "passed": true
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-light active label",
+      "ratio": 10.886229765760616,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-dark surface label",
+      "ratio": 13.049166612964505,
+      "passed": true
+    },
+    {
+      "background": "rgb(50, 57, 48)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-dark hover label",
+      "ratio": 10.41574605011211,
+      "passed": true
+    },
+    {
+      "background": "rgb(56, 52, 38)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "theme-dark active label",
+      "ratio": 10.886229765760616,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(240, 240, 235)",
+      "minimum": 4.5,
+      "name": "context menu text",
+      "ratio": 13.049166612964505,
+      "passed": true
+    },
+    {
+      "background": "rgb(37, 40, 36)",
+      "foreground": "rgb(208, 177, 109)",
+      "minimum": 3,
+      "name": "context menu icon",
+      "ratio": 7.240171426141591,
+      "passed": true
+    }
+  ]
+}

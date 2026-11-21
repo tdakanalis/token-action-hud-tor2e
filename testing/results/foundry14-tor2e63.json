@@ -1,0 +1,173 @@
+{
+  "results": [
+    {
+      "name": "Build character",
+      "passed": true
+    },
+    {
+      "name": "Build adversary",
+      "passed": true
+    },
+    {
+      "name": "Build npc",
+      "passed": true
+    },
+    {
+      "name": "Build lore",
+      "passed": true
+    },
+    {
+      "name": "Build community",
+      "passed": true
+    },
+    {
+      "name": "Zero-valued stats survive Core action creation",
+      "passed": true
+    },
+    {
+      "name": "Native character skill dialog",
+      "passed": true
+    },
+    {
+      "name": "Native proficiency dialog",
+      "passed": true
+    },
+    {
+      "name": "Native Valour dialog",
+      "passed": true
+    },
+    {
+      "name": "Native Protection dialog",
+      "passed": true
+    },
+    {
+      "name": "Native NPC skill dialog",
+      "passed": true
+    },
+    {
+      "name": "Native rest dialog cancellation",
+      "passed": true
+    },
+    {
+      "name": "Equipment changes and effects",
+      "passed": true
+    },
+    {
+      "name": "Favoured skill toggle and restore",
+      "passed": true
+    },
+    {
+      "name": "Native common skill rank increase and decrease",
+      "passed": true
+    },
+    {
+      "name": "Native combat proficiency rank increase and decrease",
+      "passed": true
+    },
+    {
+      "name": "Native NPC skill rank increase and decrease",
+      "passed": true
+    },
+    {
+      "name": "Native trait chat card",
+      "passed": true
+    },
+    {
+      "name": "Native journey-role dialog",
+      "passed": true
+    },
+    {
+      "name": "Native company sheet navigation",
+      "passed": true
+    },
+    {
+      "name": "Native field navigation: system.attributes.strength.value",
+      "passed": true
+    },
+    {
+      "name": "Native field navigation: system.resources.endurance.value",
+      "passed": true
+    },
+    {
+      "name": "Native field navigation: system.skillPoints.value",
+      "passed": true
+    },
+    {
+      "name": "Native magical skill toggle and restore",
+      "passed": true
+    },
+    {
+      "name": "Explicit mixed-group conditions apply and remove",
+      "passed": true
+    },
+    {
+      "name": "Active effect context toggle and restore",
+      "passed": true
+    },
+    {
+      "name": "Native song used-state toggle and restore",
+      "passed": true
+    },
+    {
+      "name": "Fell ability active-state toggle and restore",
+      "passed": true
+    },
+    {
+      "name": "Native undertaking sheet navigation",
+      "passed": true
+    },
+    {
+      "name": "Native standing sheet navigation",
+      "passed": true
+    },
+    {
+      "name": "Native mount sheet navigation",
+      "passed": true
+    },
+    {
+      "name": "Native journey-log sheet navigation",
+      "passed": true
+    },
+    {
+      "name": "Combat task announces the native card and opens its skill roll",
+      "passed": true
+    },
+    {
+      "name": "Visible foe targeting and target clearing",
+      "passed": true
+    },
+    {
+      "name": "Game Control player manoeuvres launcher",
+      "passed": true
+    },
+    {
+      "name": "Native Fellowship Hope recovery dialog",
+      "passed": true
+    },
+    {
+      "name": "Native journey event dialog",
+      "passed": true
+    },
+    {
+      "name": "Execute permitted native Macro",
+      "passed": true
+    },
+    {
+      "name": "System engagement, stance and attack dialog",
+      "passed": true
+    },
+    {
+      "name": "Context menu preserves its originating HUD group",
+      "passed": true
+    },
+    {
+      "name": "Secondary menu opens through keyboard",
+      "passed": true
+    }
+  ],
+  "versions": {
+    "core": "2.1.1",
+    "foundry": "14.367",
+    "system": "6.3.0"
+  }
+}

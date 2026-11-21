@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "name": "Player short rest permission safeguard",
+      "passed": true
+    },
+    {
+      "name": "Player prolonged rest permission safeguard",
+      "passed": true
+    },
+    {
+      "name": "Player stale Hope recovery action safeguard",
+      "passed": true
+    },
+    {
+      "name": "Player HUD hides unavailable direct recovery",
+      "passed": true
+    },
+    {
+      "name": "Player Eye Awareness privacy: character",
+      "passed": true
+    },
+    {
+      "name": "Player Eye Awareness privacy: community",
+      "passed": true
+    },
+    {
+      "name": "Player settings gate health, effects and Eye Awareness",
+      "passed": true
+    },
+    {
+      "name": "Observer Community has no song edit command",
+      "passed": true
+    },
+    {
+      "name": "Player can apply and remove an owned character condition",
+      "passed": true
+    }
+  ],
+  "versions": {
+    "foundry": "14.367",
+    "system": "6.3.0"
+  }
+}

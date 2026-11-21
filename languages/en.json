@@ -5,26 +5,88 @@
       "settings": {
         "displayPlayerHealthEvents": {
           "title": "Allow players to apply health statuses",
-          "description": "Enable this option to allow players to apply health statuses such as Weary, Miserable, Wounded, and Poisoned to their characters."
+          "description": "Show health statuses and condition warnings in the player HUD. Players can change statuses only on actors they own."
         },
         "displayPlayerEffects": {
           "title": "Allow players to apply effects",
-          "description": "Enable this option to allow players to apply effect statuses such as Dead, Unconscious, and Invisible to their characters."
+          "description": "Show token effects and visible active effects in the player HUD. Players can change effects only on actors they own."
         },
         "displayPlayerEyeAwareness": {
           "title": "Allow players to see Eye Awareness",
-          "description": "Enable this option to show the community's Eye Awareness in the Community menu for players. Disabled by default so the Loremaster decides whether the Eye's progress is known to the company."
+          "description": "Show the company's Eye Awareness in the player HUD when the player can view the company and the TOR2E system allows players to see Eye Awareness."
         },
         "addOverlayOnEffects": {
           "title": "Enable token overlay for effect statuses",
           "description": "Enable this option to apply a token overlay when applying effect statuses such as Dead, Unconscious, and Invisible."
+        },
+        "shareCompanyResourceTotals": {
+          "title": "Share company resource totals",
+          "description": "Show Endurance and Hope totals for company members whose sheets players can view. When disabled, players see totals only for characters they own."
+        },
+        "allowPlayerCharacterEdits": {
+          "title": "Allow player skill edits from the HUD",
+          "description": "Allow players to change skill and combat proficiency ranks and toggle Favoured or Magical on characters they own. Players can still roll when edits are disabled."
         }
       },
       "groups": {
+        "activeEffects": "Active effects",
+        "combatTasks": "Combat tasks",
+        "engagements": "Engagements",
+        "groupConditions": "Group conditions",
+        "members": "Company",
+        "journeys": "Journeys & mounts",
+        "fellowshipPhase": "Fellowship phase",
         "stats": "Stats",
         "advancement": "Advancement",
         "stances": "Stances",
         "unequipped": "Unequipped"
+      },
+      "states": {
+        "inactive": "Inactive",
+        "active": "Active",
+        "disabled": "Disabled",
+        "suppressed": "Suppressed"
+      },
+      "stats": {
+        "cost": "Cost",
+        "damage": "Damage",
+        "injury": "Injury"
+      },
+      "actions": {
+        "toggleMagical": "Toggle magical skill",
+        "openActor": "Open actor sheet",
+        "recoverHope": "Recover Hope from Fellowship",
+        "journeyEvent": "Roll journey event",
+        "journeyEventHint": "Open the system's journey event roll. Use the journey log sheet to record events.",
+        "openItem": "Open sheet",
+        "share": "Share description in chat",
+        "equip": "Equip",
+        "unequip": "Unequip",
+        "drop": "Drop",
+        "toggleFavoured": "Toggle favoured",
+        "increaseRank": "Increase rank",
+        "decreaseRank": "Decrease rank",
+        "rankHint": "Alt-click the diamonds to increase rank; Alt+Shift-click to decrease. Right-click for named rank controls.",
+        "toggleUsed": "Toggle song used",
+        "toggleAbility": "Toggle ability active",
+        "abilityResource": "Manage Hate / Resolve",
+        "toggleEffect": "Enable / disable effect",
+        "combatTasks": "Choose a combat task",
+        "clearTargets": "Clear targets",
+        "engageSelected": "Engage selected combatants",
+        "apply": "Apply",
+        "remove": "Remove",
+        "conditionWarning": "The system reports a condition threshold. Open the sheet to review and apply the appropriate condition.",
+        "check": {
+          "weary": "Review Weary condition",
+          "miserable": "Review Miserable condition"
+        },
+        "hopeRecoveryPermission": "Rest and Hope recovery require ownership of your character and the active Community. Ask the Loremaster to perform this action; the system cannot safely spend Fellowship Points with your current permissions.",
+        "restBlocked": "Ask the Loremaster",
+        "failed": "The action could not be completed. Check the notification or console for details.",
+        "rollHint": "Click to open the system roll dialog. Right-click for secondary actions; keyboard: Shift+F10.",
+        "rollOnlyHint": "Click to open the system roll dialog.",
+        "resourceHint": "Click to open the system's controls for this value."
       },
       "combat": {
         "stance": {

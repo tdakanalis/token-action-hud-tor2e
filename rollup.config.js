@@ -4,7 +4,7 @@ import copy from 'rollup-plugin-copy'
 
 export default [
     {
-        external: ['/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js', '/systems/tor2e/modules/utilities.js', '/systems/tor2e/modules/combat/Tor2eStance.js', '/systems/tor2e/modules/song.js'],
+        external: ['/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js', '/systems/tor2e/modules/utilities.js', '/systems/tor2e/modules/combat/Tor2eStance.js', '/systems/tor2e/modules/song.js', '/systems/tor2e/modules/chat/Tor2eChatMessage.js', '/systems/tor2e/modules/applications/sheets/journey-log-sheet.mjs', '/systems/tor2e/modules/rest/Tor2eRecoverHopeDialog.js'],
         input: {
             include: [
                 'scripts/*.js'

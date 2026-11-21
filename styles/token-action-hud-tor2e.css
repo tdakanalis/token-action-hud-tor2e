@@ -1,19 +1,342 @@
-.hud-info {
-    width: max-content;
+/* Core retains layout, scale and themes. All overrides belong to this integration. */
+.tor2e-hud {
+    --tor2e-accent: var(--tah-text-tertiary-color, #d0b16d);
+    --tor2e-focus: var(--tah-text-primary-color, #d0b16d);
+    --tor2e-warning: #d0b16d;
+    --tor2e-hud-scrollbar: #777b75;
 }
-
-.tah-info2 {
+/* Independent HUD palette. Explicit Core custom, light and accessibility styles
+   retain their own colors. The fixed context menu uses the source HUD palette. */
+#token-action-hud-app.tor2e-hud[data-tor2e-palette="earth"],
+body:has(#token-action-hud-app.tor2e-hud[data-tor2e-palette="earth"] .tor2e-action.context) #context-menu {
+    --tor2e-hud-surface: #252824;
+    --tor2e-hud-hover: #323930;
+    --tor2e-hud-active: #383426;
+    --tor2e-hud-active-border: #d0b16d;
+    --tor2e-hud-text: #f0f0eb;
+    --tor2e-hud-muted: #d0b16d;
+    --tor2e-hud-border: color-mix(in srgb, #d0b16d 45%, #252824);
+    --tor2e-accent: #d0b16d;
+    --tor2e-focus: #d0b16d;
+    --tor2e-warning: #d0b16d;
+    --tah-button-background-color: var(--tor2e-hud-surface);
+    --tah-button-hover-background-color: var(--tor2e-hud-hover);
+    --tah-button-toggle-hover-background-color: var(--tor2e-hud-hover);
+    --tah-button-active-background-color: var(--tor2e-hud-active);
+    --tah-button-active-text-color: var(--tor2e-hud-text);
+    --tah-button-hover-box-shadow: none;
+    --tah-button-active-box-shadow: none;
+    --tah-button-toggle-hover-box-shadow: none;
+    --tah-button-image-background-color: transparent;
+    --tah-text-primary-color: var(--tor2e-hud-text);
+    --tah-text-secondary-color: var(--tor2e-hud-muted);
+    --tah-text-tertiary-color: var(--tor2e-accent);
+    --tah-button-hover-text-primary-color: var(--tor2e-hud-text);
+    --tah-button-hover-text-secondary-color: var(--tor2e-hud-text);
+    --tah-text-disabled-color: #b5b5ac;
+    --tah-icon-hover-color: var(--tor2e-accent);
+    --tah-icon-hover-text-shadow: none;
+    --tah-button-text-shadow: none;
+    --tah-text-shadow: 0 1px 2px #000, 0 0 3px #000;
+    --tah-character-name-text-shadow: var(--tah-text-shadow);
+}
+body:has(#token-action-hud-app.tor2e-hud[data-tor2e-palette="earth"] .tor2e-action.context) #context-menu {
+    background: var(--tor2e-hud-surface);
+    color: var(--tor2e-hud-text);
+    border: 1px solid var(--tor2e-hud-border);
+    box-shadow: none;
+    border-radius: 4px;
+}
+body:has(#token-action-hud-app.tor2e-hud[data-tor2e-palette="earth"] .tor2e-action.context) #context-menu .context-item:is(:hover, :focus-visible) {
+    background: var(--tor2e-hud-active);
+    color: var(--tor2e-hud-text);
+}
+body:has(#token-action-hud-app.tor2e-hud[data-tor2e-palette="earth"] .tor2e-action.context) #context-menu .context-item {
+    color: var(--tor2e-hud-text);
+}
+body:has(#token-action-hud-app.tor2e-hud[data-tor2e-palette="earth"] .tor2e-action.context) #context-menu .context-item i {
+    color: var(--tor2e-accent);
+}
+#token-action-hud-app.tor2e-hud:has(.tor2e-action.context),
+#token-action-hud-app.tor2e-hud:focus-within {
+    opacity: 1;
+    transition: none;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud [data-part="characterName"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+#token-action-hud-app.tor2e-hud .tor2e-resource-summary {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+#token-action-hud-app.tor2e-hud .tor2e-summary-resource,
+#token-action-hud-app.tor2e-hud .tor2e-summary-condition {
+    height: auto;
+    min-height: 24px;
+    width: auto;
+    padding: 2px 7px;
+    border: 0;
+    border-inline-start: 1px solid color-mix(in srgb, var(--tah-text-primary-color, currentColor) 30%, transparent);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--tah-text-primary-color);
+    font-size: var(--font-size-12, 12px);
+    font-variant-numeric: tabular-nums;
+    text-shadow: var(--tah-character-name-text-shadow, 0 1px 2px #000);
+}
+#token-action-hud-app.tor2e-hud .tor2e-summary-resource:hover,
+#token-action-hud-app.tor2e-hud .tor2e-summary-resource:focus-visible {
+    border-color: var(--tor2e-accent);
+    outline: 1px solid var(--tor2e-accent);
+}
+#token-action-hud-app.tor2e-hud .tor2e-summary-condition {
+    border-color: var(--tor2e-accent);
+    color: var(--tor2e-accent);
+}
+#token-action-hud-app.tor2e-hud .tor2e-summary-resource {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-weight: 400;
+}
+#token-action-hud-app.tor2e-hud .tor2e-summary-value {
+    color: var(--tor2e-accent);
+    font-weight: 600;
+}
+#token-action-hud-app.tor2e-hud .tor2e-summary-resource:focus-visible {
+    outline: 2px solid var(--tor2e-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--tah-button-background-color, #252824);
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-group-button {
+    border-radius: 4px;
+    padding-inline: 10px;
+    border: 1px solid transparent;
+    box-shadow: none;
+}
+/* Group icons are actual img elements; action icons use background images.
+   Both keep a fixed slot without distorting non-square system artwork. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-group-button .tah-button-image {
+    width: 24px;
+    min-width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    object-fit: contain;
+    object-position: center;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-subgroups:has(.tor2e-action) {
+    padding: 4px 0;
+    border-radius: 0;
+    border: 0;
+    background: var(--tah-subgroups-background, none);
+    color: var(--tah-text-primary-color);
+    box-shadow: none;
+    max-width: min(780px, calc(100vw - 48px));
+    min-width: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--tor2e-hud-scrollbar) transparent;
+}
+/* Keep Core's popup anchor and grow Community only into the space to its right. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group.tor2e-community-wide > .tah-subgroups-container > .tah-subgroups {
+    width: min(360px, var(--tor2e-community-width));
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group.tor2e-community-wide .tah-actions {
+    display: flex !important;
+    flex-flow: row wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    max-width: 100% !important;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group.tor2e-community-wide .tah-action {
+    min-width: 0;
+    max-width: 100%;
+}
+/* Keep two Travel cards per row when they fit. Other buttons pack from the left. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group.tor2e-community-wide .tah-action:has(> .travelRole) {
+    flex: 0 0 max(min(100%, 155px), calc((100% - var(--tah-gap, 5px)) / 2));
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group.tor2e-community-wide .tah-action-button {
+    max-width: 100%;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group.tor2e-community-wide .tah-action-button .tah-button-text {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+/* Foundry renders fixed menus outside the HUD. Keep the originating group visible
+   while Core's context target is active, even after the pointer leaves the group. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-group:has(.tor2e-action.context) > .tah-subgroups-container,
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-tab-subgroup:has(.tor2e-action.context) > .tah-subgroups-container {
+    display: flex;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-list-subgroup .tah-list-subgroup-title {
+    font-size: var(--font-size-12, 12px);
+    color: var(--tah-text-primary-color);
+    text-shadow: 0 1px 2px #000;
+    letter-spacing: .065em;
+    line-height: 1.2;
+    margin-block: 2px;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-list-subgroup > .tah-subgroups:has(.tor2e-action) {
+    padding-block: 0;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-group-button, #token-action-hud-app.tor2e-hud #token-action-hud .tah-list-subgroup-title {
+    font-weight: 500;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-group-button .tah-button-content {
+    padding-inline: 2px;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-action-button.tor2e-action {
+    min-height: 30px;
+    height: auto;
+    padding: 4px 7px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    box-shadow: none;
+    transition: border-color 120ms ease, background-color 120ms ease;
+    font-weight: 500;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action .tah-button-image-wrapper,
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action .tah-button-image {
+    height: 24px;
+    width: 24px;
+    min-width: 24px;
+    flex: 0 0 24px;
+    object-fit: contain;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+/* Rank diamonds have a distinct modifier action and must receive the pointer. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action[value^="skill|"] .tah-info1,
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action[value^="proficiency|"] .tah-info1 {
+    pointer-events: auto;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-action-button.tor2e-action:hover {
+    border-color: color-mix(in srgb, var(--tor2e-accent) 50%, transparent);
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-action-button.tor2e-action:focus-visible {
+    outline: 2px solid var(--tor2e-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--tah-button-background-color, #252824);
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action .tah-button-content {
+    gap: 7px;
+    padding-inline: 3px 2px;
+    min-width: 0;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action .tah-info-container { gap: 5px; }
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action .tah-info {
+    min-width: 1.5em;
+    padding: 0 3px;
+    border-radius: 0;
+    background: transparent;
+    font-variant-numeric: tabular-nums;
     text-shadow: none;
+    white-space: nowrap;
+    color: inherit;
+    font-weight: 400;
+    letter-spacing: normal;
 }
-
-.tah-info2 {
-    color: #2e9c36 !important;
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action.active,
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action.active:hover {
+    background: var(--tah-button-active-background-color);
+    border-color: var(--tor2e-hud-active-border, var(--tor2e-accent));
+    box-shadow: none;
 }
-
-.tah-info1 {
-    color: #f3ab01 !important;
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action.active:focus-visible {
+    box-shadow: 0 0 0 4px var(--tah-button-background-color, #252824);
 }
-
-.tah-info3 {
-    color: #0279f1 !important;
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action.toggle.active .tah-button-text::after {
+    content: ' ✓';
+    color: var(--tor2e-hud-active-border, currentColor);
+    font-weight: 600;
+}
+/* Fit each company card to its name and keep resource values together below. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-action:has(> .tor2e-action[value^="hud|sheet|Actor."] .tah-info2) {
+    width: fit-content;
+    min-width: 0;
+    max-width: 100%;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-action-button.tor2e-action[value^="hud|sheet|Actor."]:has(.tah-info2) {
+    width: auto;
+    align-items: flex-start;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action[value^="hud|sheet|Actor."]:has(.tah-info2) .tah-button-content {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 2px 7px;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action[value^="hud|sheet|Actor."]:has(.tah-info2) .tah-button-text {
+    grid-column: 1 / -1;
+    width: auto;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action[value^="hud|sheet|Actor."]:has(.tah-info2) .tah-info-container {
+    display: contents;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.tor2e-action[value^="hud|sheet|Actor."]:has(.tah-info2) .tah-info-container .tah-info {
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    text-align: left;
+}
+/* Role and skill share a line; assigned members wrap beneath them. */
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-action:has(> .travelRole) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action.travelRole {
+    width: 100%;
+    min-width: 0;
+    align-items: flex-start;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.travelRole .tah-button-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 8px;
+    min-width: 0;
+    overflow: visible;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.travelRole .tah-button-content .tah-info-container { display: contents; }
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.travelRole .tah-button-content .tah-button-text {
+    grid-column: 1;
+    grid-row: 1;
+    width: auto;
+    white-space: normal;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.travelRole .tah-button-content .tah-info-container .tah-info1 {
+    grid-column: 2;
+    grid-row: 1;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tah-groups .tah-action-button.travelRole .tah-button-content .tah-info-container .tah-info2 {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: auto;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+    font-weight: normal;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action.tor2e-warning {
+    border-inline-start: 3px solid var(--tor2e-warning);
+    font-weight: 600;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action.disabled {
+    opacity: 1;
+    color: var(--tah-text-disabled-color);
+    cursor: default;
+}
+#token-action-hud-app.tor2e-hud #token-action-hud .tor2e-action .hud-info { width: max-content; }
+@media (prefers-reduced-motion: reduce) {
+    #token-action-hud-app.tor2e-hud #token-action-hud .tah-action-button.tor2e-action { transition: none; }
 }
