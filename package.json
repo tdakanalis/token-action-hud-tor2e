@@ -1,5 +1,6 @@
 {
     "scripts": {
+        "test": "node --test",
         "build": "rollup -c",
         "dev": "rollup -wcm"
     },

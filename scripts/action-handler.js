@@ -362,7 +362,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         img: weapon.img,
                         tooltip: weapon?.system?.description?.value,
                         encodedValue: ['weapon', this.actor.type, weapon.name, weapon.id].join(this.delimiter),
-                        info1: {class: "hud-info", text: generateDiamonds(proficiency.value)},
+                        info1: {class: "hud-info", text: generateDiamonds(proficiency?.value ?? 0)},
                         info2: {class: "hud-info", text: damage},
                         info3: {class: "hud-info", text: injury + (proficiency?.favoured?.value ?
                                 '  ' + coreModule.api.Utils.i18n(proficiency?.favoured?.label) : '')},
