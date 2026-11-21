@@ -9,7 +9,7 @@ This module brings frequently used actions for The One Ring 2nd Edition into a m
 
 ## User guide
 
-Read the [current user guide](docs/user-guide.md) for the latest HUD controls and settings. The [original illustrated PDF manual](docs/token-action-hud-tor2e-manual.pdf) covers version 1.6.
+Read the [illustrated user manual and installation guide](docs/token-action-hud-tor2e-manual.pdf) for v1.7.0. The [online quick reference](docs/user-guide.md) covers the same release.
 
 ## Features
 

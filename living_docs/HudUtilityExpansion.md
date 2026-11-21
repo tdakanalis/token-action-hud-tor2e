@@ -32,7 +32,7 @@
 | 5 | 5.1 | Complete player and Loremaster regression testing in Foundry | M | 🟢 done | Final candidate: 41 Loremaster, 9 player, 9 appearance and 1 real right-click check passed on Foundry 14.367 / TOR2E 6.3.0 / Core 2.1.1. Unit suite, build and sampled contrast checks passed. Older combinations remain unverified. |
 | 5 | 5.2 | Prepare the final branch as a reviewable pull request | S | 🟢 done | [Draft PR #6](https://github.com/tdakanalis/token-action-hud-tor2e/pull/6), implementation commit 15c09c3, includes test receipts, compatibility limits and a screenshot. No merge or release. |
 | 5 | 5.3 | Obtain approval for completed functionality and appearance | S | 🟢 done | User approved proceeding with final checks and release. |
-| 5 | 5.4 | Update the user guide after approval | M | 🟢 done | Updated the Markdown guide and README. Restored the original illustrated PDF as the version 1.6 manual at the user’s request. |
+| 5 | 5.4 | Update the user guide after approval | M | 🟢 done | Updated the existing illustrated PDF in its original design, the Markdown quick reference and README. |
 | 5 | 5.5 | Record the as-built architecture and final release checks | S | 🟢 done | HudArchitecture.md and testing/README.md record boundaries and reproduction. Final receipts are in testing/results. |
 
 **Legend:** ⚪ not started · 🟡 working · 🟢 done · 🔴 blocked / needs decision
