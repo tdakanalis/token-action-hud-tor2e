@@ -2,8 +2,8 @@ import {STATS} from "./constants.js";
 import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
 import Tor2eSong from "/systems/tor2e/modules/song.js";
 import {Tor2eStance} from "/systems/tor2e/modules/combat/Tor2eStance.js";
-import {checkHopeRecoveryPermission, communityFor, handleFeatureAction, openSystemSheet, shareSystemItem} from './features.js';
-import {getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens, isAllowedForUser} from "./utils.js";
+import {canView, checkHopeRecoveryPermission, communityFor, handleFeatureAction, openSystemSheet, shareSystemItem} from './features.js';
+import {canSeeEyeAwareness, getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens, isAllowedForUser} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -32,6 +32,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             if(decoded.length > 3) {
                 macroSubType = decoded[3]
+            }
+
+            if (!game.user.isGM && !this.actor?.isOwner) {
+                if (typeAction === 'community' || typeAction === 'song') {
+                    if (this.actor?.type !== 'community' || !canView(this.actor)) return;
+                } else if (!['hud', 'macro', 'multiple'].includes(typeAction)) return;
             }
 
             if (this.isRightClick) {
@@ -108,6 +114,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     await openSystemSheet(this.actor, undefined, 'system.occupation.value');
                     break;
                 case 'community': {
+                    if (macroType === 'eyeAwareness' && !canSeeEyeAwareness()) break;
                     const community = communityFor(this.actor);
                     if (macroType === 'travel' && this.actor?.type === 'character') {
                         const skills = {guide: 'travel', hunters: 'hunting', scouts: 'explore', lookouts: 'awareness'};
@@ -296,6 +303,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleTarget() {
+            if (!game.user.isGM) return;
             const target = this.token;
             if (!target) {
                 return;
@@ -323,9 +331,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleEffect(effect) {
-            if (!isAllowedForUser("displayPlayerEffects")) {
-                return;
-            }
+            if (!game.user.isGM) return;
             for (const actor of new Set(this.actors)) {
                 if (!['character', 'adversary', 'npc', 'lore'].includes(actor.type)) continue;
                 const condition = CONFIG.statusEffects.find(e => e.id === effect);
@@ -335,9 +341,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleHealthStatus(status) {
-            if (!isAllowedForUser("displayPlayerHealthEvents")) {
-                return;
-            }
+            if (!game.user.isGM) return;
             for (const actor of new Set(this.actors)) {
                 if (actor.isOwner === false || !['character', 'adversary', 'npc', 'lore'].includes(actor.type)
                     || (actor.type !== 'character' && ['miserable', 'daunted'].includes(status))) continue;
@@ -443,6 +447,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             if (!community) {
                 return;
             }
+            const performer = game.user.character;
+            if (!game.user.isGM && (!performer?.isOwner
+                || !community.system.members.some(member => member.id === performer.id))) return;
             // Tor2eSong resolves the performing character itself: a Loremaster gets a
             // member picker, a player uses their assigned character.
             await new Tor2eSong({songId, user: game.user, community}).play();

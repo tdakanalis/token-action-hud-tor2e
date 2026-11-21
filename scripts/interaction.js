@@ -1,5 +1,6 @@
-import {label, openSystemSheet, shareSystemItem} from './features.js';
-import {getCurrentCommunity, getSetting, isAllowedForUser} from './utils.js';
+import {MODULE_ID} from './constants.js';
+import {canView, communityFor, label, openSystemSheet, shareSystemItem} from './features.js';
+import {canSeeEyeAwareness, getSetting, isAllowedForUser} from './utils.js';
 
 const enhancedButtons = new WeakSet();
 const sizedCommunityGroups = new WeakSet();
@@ -9,7 +10,7 @@ function actionContext(target, manager) {
     const button = element?.closest?.('.tah-action-button') ?? element;
     const [type, actorType, key, itemId] = (button.value ?? '').split('|');
     const actor = manager.actor;
-    const community = actor?.type === 'community' ? actor : getCurrentCommunity();
+    const community = type === 'song' ? communityFor(actor) : null;
     const item = type === 'song' ? community?.items.get(key)
         : ['weapon', 'armour', 'traits', 'miscellaneous'].includes(type) ? actor?.items.get(itemId)
         : type === 'skill' && actorType === 'npc' ? actor?.items.get(itemId) : null;
@@ -23,8 +24,10 @@ export function registerInteractions() {
             icon: `<i class="${icon}"></i>`,
             visible: target => predicate(actionContext(target, manager)),
             onClick: async (event, target) => {
+                const context = actionContext(target, manager);
+                if (!predicate(context)) return;
                 try {
-                    await run(actionContext(target, manager), event);
+                    await run(context, event);
                 } catch (error) {
                     console.error('Token Action HUD TOR2E | Context action failed', error);
                     ui.notifications.error(label('actions.failed'));
@@ -33,8 +36,8 @@ export function registerInteractions() {
                 }
             }
         });
-        menu('openItem', c => Boolean(c.item), c => openSystemSheet(c.item), 'fa-solid fa-book-open');
-        menu('share', c => Boolean(c.item), c => shareSystemItem(c.item.parent, c.item), 'fa-solid fa-comment');
+        menu('openItem', c => canView(c.item), c => openSystemSheet(c.item), 'fa-solid fa-book-open');
+        menu('share', c => canView(c.item), c => shareSystemItem(c.item.parent, c.item), 'fa-solid fa-comment');
         for (const [command, equipped, dropped] of [['equip', true, false], ['unequip', false, false], ['drop', false, true]]) {
             menu(command, c => ['weapon', 'armour'].includes(c.type) && c.actor?.type === 'character' && c.item?.isOwner,
                 c => manager.rollHandler._setItemStatus(c.item.id, 'system.equipped.value', equipped, 'system.dropped.value', dropped));
@@ -83,7 +86,9 @@ export function registerInteractions() {
         Hooks.on(hook, () => Hooks.callAll('forceUpdateTokenActionHud'));
     }
     Hooks.on('updateSetting', setting => {
-        if (setting.key?.startsWith('tor2e.')) Hooks.callAll('forceUpdateTokenActionHud');
+        if (setting.key?.startsWith('tor2e.') || setting.key?.startsWith(`${MODULE_ID}.`)) {
+            Hooks.callAll('forceUpdateTokenActionHud');
+        }
     });
     Hooks.on('renderTokenActionHud', app => {
         const root = app.element instanceof HTMLElement ? app.element : app.element?.[0];
@@ -134,8 +139,9 @@ export function registerInteractions() {
         }
         const header = root?.querySelector('[data-part="characterName"]');
         const actor = app.hudManager?.actor;
-        if (!header || !actor) return;
+        if (!header) return;
         header.querySelector('.tor2e-resource-summary')?.remove();
+        if (!canView(actor)) return;
         const summary = document.createElement('span');
         summary.className = 'tor2e-resource-summary';
         const addResource = (name, value, max, field) => {
@@ -165,7 +171,8 @@ export function registerInteractions() {
             const hope = actor.system.resources?.hope;
             if (hope) addResource(game.i18n.localize(hope.label ?? 'tor2e.actors.stats.hope'), actor.extendedData?.getHopePoint?.() ?? hope.value,
                 hope.max, 'system.resources.hope.value');
-            for (const status of ['weary', 'miserable', 'wounded', 'poisoned']) {
+            const conditions = isAllowedForUser('displayPlayerHealthEvents') ? ['weary', 'miserable', 'wounded', 'poisoned'] : [];
+            for (const status of conditions) {
                 if (!actor.hasStatusEffectById?.(status)) continue;
                 const badge = document.createElement('span');
                 badge.className = 'tor2e-summary-condition';
@@ -181,7 +188,7 @@ export function registerInteractions() {
             const fellowship = actor.system.fellowshipPoints;
             if (fellowship) addResource(game.i18n.localize(fellowship.label ?? 'tor2e.actors.stats.fellowshipPoints'), fellowship.value,
                 fellowship.max, 'system.fellowshipPoints.value');
-            if (isAllowedForUser('displayPlayerEyeAwareness')) {
+            if (canSeeEyeAwareness()) {
                 const eye = actor.system.eyeAwareness;
                 if (eye) addResource(game.i18n.localize(eye.label ?? 'tor2e.actors.stats.eyeAwareness'), eye.value, eye.max, 'system.eyeAwareness.value');
             }

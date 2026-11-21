@@ -43,6 +43,13 @@ export function isAllowedForUser(label) {
     return game.user.isGM || getSetting(label);
 }
 
+export function canSeeEyeAwareness() {
+    if (!isAllowedForUser('displayPlayerEyeAwareness')) return false;
+    // Older TOR2E releases do not register this setting.
+    return game.user.isGM || !game.settings.settings?.has('tor2e.eyeAwarenessLoremasterOnly')
+        || !game.settings.get('tor2e', 'eyeAwarenessLoremasterOnly');
+}
+
 export function getCurrentCommunity() {
     // Delegates to the system so the "current community" setting stays a single
     // source of truth; the type guard covers the setting pointing at a stale id.

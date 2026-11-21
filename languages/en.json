@@ -5,15 +5,15 @@
       "settings": {
         "displayPlayerHealthEvents": {
           "title": "Allow players to apply health statuses",
-          "description": "Enable this option to allow players to apply health statuses such as Weary, Miserable, Wounded, and Poisoned to their characters."
+          "description": "Show health statuses and condition warnings in the player HUD. Players can change statuses only on actors they own."
         },
         "displayPlayerEffects": {
           "title": "Allow players to apply effects",
-          "description": "Enable this option to allow players to apply effect statuses such as Dead, Unconscious, and Invisible to their characters."
+          "description": "Show token effects and visible active effects in the player HUD. Players can change effects only on actors they own."
         },
         "displayPlayerEyeAwareness": {
           "title": "Allow players to see Eye Awareness",
-          "description": "Enable this option to show the community's Eye Awareness in the Community menu for players. Disabled by default so the Loremaster decides whether the Eye's progress is known to the company."
+          "description": "Show the company's Eye Awareness in the player HUD when the player can view the company and the TOR2E system allows players to see Eye Awareness."
         },
         "addOverlayOnEffects": {
           "title": "Enable token overlay for effect statuses",

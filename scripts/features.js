@@ -1,4 +1,4 @@
-import {getActiveStatusIds, getCurrentCommunity, isAllowedForUser} from './utils.js';
+import {canSeeEyeAwareness, getActiveStatusIds, getCurrentCommunity, isAllowedForUser} from './utils.js';
 
 const PREFIX = 'tokenActionHud.tor2e.';
 export const label = key => game.i18n.localize(PREFIX + key);
@@ -25,6 +25,9 @@ export function checkHopeRecoveryPermission(actor, community) {
 
 export async function openSystemSheet(document, tab, field) {
     if (!canView(document)) return;
+    if (document.documentName === 'ActiveEffect'
+        && (!isAllowedForUser('displayPlayerEffects') || (!document.isOwner && !document.visible))) return;
+    if (field === 'system.eyeAwareness.value' && !canSeeEyeAwareness()) return;
     const sheet = document.sheet;
     await sheet.render(true);
     if (tab) {
@@ -58,7 +61,7 @@ export async function loadFeatures(handler) {
 
     if (actor && canView(actor)) {
         add(groups.resources, 'openActor', label('actions.openActor'), 'sheet', [actor.uuid], {img: actor.img});
-        if (actor.type === 'character') {
+        if (actor.type === 'character' && isAllowedForUser('displayPlayerHealthEvents')) {
             const warnings = [
                 ['weary', actor.shouldBeWeary?.()], ['miserable', actor.shouldBeMiserable?.()]
             ];
@@ -78,7 +81,7 @@ export async function loadFeatures(handler) {
                 });
             }
         }
-        if (actor.type === 'character') {
+        if (actor.type === 'character' && actor.isOwner) {
             const group = addGroup('combatTasks', 'combat');
             const combatant = handler.token?.document?.findCombat?.()?.combatant ?? handler.token?.combatant;
             const stance = combatant?.getStance?.()?.class;
@@ -90,7 +93,7 @@ export async function loadFeatures(handler) {
                 const associated = task.system.associatedStance?.value;
                 if (stance && associated && associated !== 'all' && !stance.toLowerCase().includes(associated.toLowerCase())) continue;
                 add(group, task.id, task.name, 'task', [task.uuid], {
-                    img: task.img, tooltip: task.system.description?.value, hasContextMenu: true,
+                    img: task.img, tooltip: task.isOwner ? task.system.description?.value : undefined, hasContextMenu: true,
                     info1: {text: task.system.associatedSkill?.value === 'none' ? ''
                         : game.i18n.localize('tor2e.commonSkills.' + task.system.associatedSkill?.value)}
                 });
@@ -118,7 +121,7 @@ export async function loadFeatures(handler) {
 
     const actors = [...new Set(handler.actors ?? (actor ? [actor] : []))]
         .filter(a => a.isOwner && ['character', 'adversary', 'npc', 'lore'].includes(a.type));
-    if (actors.length > 1 && isAllowedForUser('displayPlayerHealthEvents')) {
+    if (actors.length > 1 && game.user.isGM) {
         const group = addGroup('groupConditions', 'misc');
         for (const status of handler._getHealthStatuses(actors)) {
             const eligible = actors.filter(a => a.type === 'character' || !['miserable', 'daunted'].includes(status));
@@ -230,7 +233,7 @@ export async function handleFeatureAction(handler, command, args) {
         const combat = await fromUuid(id);
         if (combat?.scene?.id === globalThis.canvas?.scene?.id) return combat.engagementAction?.(combat);
     }
-    if (command === 'condition' && isAllowedForUser('displayPlayerHealthEvents')) {
+    if (command === 'condition' && game.user.isGM) {
         const allowed = handler._getHealthStatuses?.(handler.actors ?? []) ?? ['weary', 'wounded', 'poisoned', 'miserable', 'daunted'];
         if (!allowed.includes(id)) return;
         for (const actor of new Set(handler.actors ?? [handler.actor])) {

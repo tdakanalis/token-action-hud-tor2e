@@ -1,4 +1,5 @@
 import {
+    canSeeEyeAwareness,
     capitalizeFirstLetter,
     generateDiamonds,
     getActiveStatusIds,
@@ -8,7 +9,7 @@ import {
     isAllowedForUser
 } from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
-import {communityFor, label, loadFeatures} from './features.js';
+import {canView, communityFor, label, loadFeatures} from './features.js';
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
 
@@ -47,23 +48,23 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async buildSystemActions(groupIds) {
             this.GROUP = getGroup(coreModule);
 
-            if (this.actor) {
+            if (this.actor && (game.user.isGM || this.actor.isOwner)) {
                 await this._loadStats();
                 await this._loadSkills();
                 await this._loadCombat();
                 await this._loadTraits();
                 await this._loadMiscellaneous();
                 await this._loadCommunity();
-            } else {
+            } else if (this.actor?.type === 'community' && canView(this.actor)) {
+                await this._loadCommunity();
+            } else if (!this.actor) {
                 await this._loadCombatUtils();
-                if (isAllowedForUser("displayPlayerHealthEvents")) {
+                if (game.user.isGM) {
                     await this._loadHealthStatusesForMultiple();
-                }
-                if (isAllowedForUser("displayPlayerEffects")) {
                     await this._loadEffectsForMultiple();
                 }
             }
-            await loadFeatures(this);
+            if (!this.actor || game.user.isGM || canView(this.actor)) await loadFeatures(this);
             await this._loadMacros();
         }
 
@@ -654,7 +655,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadEyeAwareness(community) {
-            if (!['character', 'community'].includes(this.actor.type) || !isAllowedForUser("displayPlayerEyeAwareness")) {
+            if (!['character', 'community'].includes(this.actor.type) || !canSeeEyeAwareness()) {
                 return;
             }
             const eyeAwareness = community.system?.eyeAwareness;
@@ -775,10 +776,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadEffectsForMultiple() {
-            const activeEffects = [];
-            for (const actor of this.actors) {
-                activeEffects.push(...getActiveStatusIds(actor));
-            }
+            const actors = this._getOwnedConditionActors();
+            if (!actors.length) return;
+            const activeEffects = actors.flatMap(getActiveStatusIds);
 
             const allowedEffects = ["dead", "unconscious", "invisible"];
             const effects = CONFIG.statusEffects.filter(e => allowedEffects.includes(e.id));
@@ -798,16 +798,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _loadHealthStatusesForMultiple() {
-            const activeEffects = [];
-            for (const actor of this.actors) {
-                activeEffects.push(...getActiveStatusIds(actor));
-            }
-            this._getHealthStatuses(Array.from(this.actors ?? [])).forEach(s => {
+            const actors = this._getOwnedConditionActors();
+            if (!actors.length) return;
+            const activeEffects = actors.flatMap(getActiveStatusIds);
+            this._getHealthStatuses(actors).forEach(s => {
                 this.addActions([
                     this._buildHealthStatusAction(s, activeEffects.includes(s),
                         ['multiple', 'multiple', s].join(this.delimiter))
                 ], this.GROUP.health);
             });
+        }
+
+        _getOwnedConditionActors() {
+            return Array.from(this.actors ?? []).filter(actor =>
+                actor.isOwner && ['character', 'adversary', 'npc', 'lore'].includes(actor.type));
         }
     }
 })

@@ -28,3 +28,19 @@ test('Core layout flag saves do not cause a HUD rebuild loop', () => {
     handlers.get('updateActor')({}, {system: {resources: {hope: {value: 3}}}});
     assert.deepEqual(refreshes, ['forceUpdateTokenActionHud']);
 });
+
+test('a health context command stops working when the Loremaster disables it', async () => {
+    const {handlers} = setup();
+    let enabled = true;
+    game.user.isGM = false;
+    game.settings = {get: () => enabled};
+    const menu = [];
+    const actor = {isOwner: true, addStatusEffectById: () => assert.fail('disabled action ran')};
+    handlers.get('tokenActionHudCoreActionContextMenu')(menu, {actor});
+    const button = {value: 'health|character|weary'};
+    const apply = menu.find(item => item.label.endsWith('.apply') && item.visible(button));
+    assert.ok(apply);
+    enabled = false;
+    assert.equal(apply.visible(button), false);
+    await apply.onClick({}, button);
+});
