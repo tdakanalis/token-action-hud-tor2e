@@ -27,13 +27,13 @@
 | 4 | 4.1 | Add journey-role rolls | S | 🟢 done | Native role dialog passes; player sees own role action and solo-mode gating is unit-tested. |
 | 4 | 4.2 | Build a useful Community-token HUD and company overview | M | 🟢 done | Company, member, role and song controls implemented; native song toggle and Player Eye privacy/Observer edit restrictions tested. |
 | 4 | 4.3 | Expose journey logs, mounts and system event rolls | M | 🟢 done | Native sheets and event dialog pass. Recording remains in the native log sheet. |
-| 4 | 4.4 | Add optional Game Control launchers | M | 🟢 done | Installed 2.1.1 council, manoeuvre, synthesis and XP dialogs plus all three native chat reports tested. GM permission and capability gates covered. |
+| 4 | 4.4 | Add optional Game Control manoeuvres launcher | M | 🟢 done | Native manoeuvres dialog tested. The user removed the Loremaster tools from Community. |
 | 4 | 4.5 | Expose undertakings, standings and permitted contacts | M | 🟢 done | Populated native document navigation passes; contact visibility uses document permission checks. |
-| 5 | 5.1 | Complete player and Loremaster regression testing in Foundry | M | 🟢 done | Final no-dots design: 47 GM, 8 Player and 1 real right-click checks pass on Foundry 14.367 / TOR2E 6.3.0 / Core 2.1.1; 52 unit tests pass. Older matrix remains unverified. |
+| 5 | 5.1 | Complete player and Loremaster regression testing in Foundry | M | 🟢 done | Final candidate: 41 Loremaster, 9 player, 9 appearance and 1 real right-click check passed on Foundry 14.367 / TOR2E 6.3.0 / Core 2.1.1. Unit suite, build and sampled contrast checks passed. Older combinations remain unverified. |
 | 5 | 5.2 | Prepare the final branch as a reviewable pull request | S | 🟢 done | [Draft PR #6](https://github.com/tdakanalis/token-action-hud-tor2e/pull/6), implementation commit 15c09c3, includes test receipts, compatibility limits and a screenshot. No merge or release. |
-| 5 | 5.3 | Obtain approval for completed functionality and appearance | S | ⚪ not started | Required before the user-guide update. |
-| 5 | 5.4 | Update the user guide after approval | M | ⚪ not started | Update the source and PDF to match approved behavior before release. |
-| 5 | 5.5 | Record the as-built architecture and final release checks | S | 🟡 working | HudArchitecture.md and testing/README.md record boundaries and reproduction. Final release checks follow approval and guide update. |
+| 5 | 5.3 | Obtain approval for completed functionality and appearance | S | 🟢 done | User approved proceeding with final checks and release. |
+| 5 | 5.4 | Update the user guide after approval | M | 🟢 done | Updated Markdown guide, PDF and README before release. |
+| 5 | 5.5 | Record the as-built architecture and final release checks | S | 🟢 done | HudArchitecture.md and testing/README.md record boundaries and reproduction. Final receipts are in testing/results. |
 
 **Legend:** ⚪ not started · 🟡 working · 🟢 done · 🔴 blocked / needs decision
 **Size:** XS · S · M · L · XL.
@@ -63,6 +63,26 @@ Audit and repair existing features before building additions. Validate each cohe
 | Merging, publishing or releasing without final approval | Out of scope | Development ends in a reviewable pull request. |
 
 ## 5. Decision log
+
+### 2026-11-21 — Outward Community layout
+
+**Decision:** Use the released HUD’s outward opening direction for the wider Community panel, with a narrower layout when space is limited. Remove the optional Game Control Loremaster tools from Community.
+
+### 2026-11-21 — Restore the independent direction and existing menu behavior
+
+**Decision:** The user rejected matching the character sheet and cancelled the overall vertical-footprint reduction. Restore the charcoal/ivory/bronze palette with forest-green active states and the previous row padding and section spacing. Preserve the existing 24px icon slots and aspect-ratio repair. The user also withdrew the menu-movement request; retain the existing hover behavior.
+
+**Implementation:** Revert the attempted Core default override and the isolated review client's click-to-open setting. No category-opening behavior change is included. Keep the Travel clipping repair: role and skill on the first line, assigned names wrapping beneath, with a readable scrollbar.
+
+**Review:** The requested standard is restrained, elegant and professional. No three-dot indicators, enclosing menu fills or global vertical-compression changes are included. Appearance approval remains pending.
+
+### 2026-11-21 — Proportionate icons and a coordinated, readable palette
+
+**Decision:** Fit group and action artwork into fixed slots without distortion. Use charcoal controls, ivory text, muted bronze accents and forest-green active states in default dark/docked styles and their own context menus. Keep explicit custom, light and high-contrast palettes separate.
+
+**Why:** The user identified stretched Stats artwork and asked for a more appropriate palette with readable, harmonious colors in every HUD state. The native Stats image is a 300×450 portrait previously forced to fill a square.
+
+**Validation:** Rendered icon checks, actual state/menu color sampling, numeric contrast checks, and native theme switching supplement the interaction suite. Active checkmarks/pressed semantics, readable disabled labels, dark heading text shadows and a contrasting focus surround provide cues beyond color. The latest screenshot and appearance receipt are under testing/.
 
 ### 2026-11-21 — Sleeker styling and real pointer interaction
 

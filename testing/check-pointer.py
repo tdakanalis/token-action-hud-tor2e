@@ -30,6 +30,13 @@ def move(point):
 
 
 category = evaluate('''(async()=>{
+    if (!game.ready) await new Promise(resolve=>Hooks.once('ready',resolve));
+    if (!canvas.ready) await new Promise(resolve=>Hooks.once('canvasReady',resolve));
+    const deadline=performance.now()+10000;
+    while (!game.tokenActionHud?.hudManager) {
+        if (performance.now()>deadline) throw new Error('HUD did not initialize.');
+        await new Promise(requestAnimationFrame);
+    }
     if (!game.user.isGM || game.world.id !== 'hud-regression-tests') throw new Error('Isolated GM world required.');
     await ui.context?.close({animate:false});
     canvas.tokens.releaseAll();
@@ -40,6 +47,9 @@ category = evaluate('''(async()=>{
     const rect=button.closest('.tah-tab-group').querySelector('.tah-group-button').getBoundingClientRect();
     return {x:rect.x+rect.width/2,y:rect.y+rect.height/2};
 })()''')
+# Enter from outside even when the previous run left the pointer over the same
+# category coordinates: Core replaces its DOM during render.
+move({'x': 10, 'y': 10})
 move(category)
 action = evaluate('''(()=>{
     const button=[...game.tokenActionHud.element.querySelectorAll('.tor2e-action')].find(e=>e.value.startsWith('skill|'));

@@ -137,31 +137,7 @@
       "passed": true
     },
     {
-      "name": "Game Control native launcher: macro_des_conseilActionProlongee",
-      "passed": true
-    },
-    {
-      "name": "Game Control native launcher: macro_combat_manoeuvres",
-      "passed": true
-    },
-    {
-      "name": "Game Control native launcher: macro_communaute_synthesePj",
-      "passed": true
-    },
-    {
-      "name": "Game Control native launcher: macro_communaute_ajouteprogression",
-      "passed": true
-    },
-    {
-      "name": "Game Control native chat report: macro_sante_rapportSantePhysique",
-      "passed": true
-    },
-    {
-      "name": "Game Control native chat report: macro_sante_rapportSanteMentale",
-      "passed": true
-    },
-    {
-      "name": "Game Control native chat report: macro_communaute_rapportExperience",
+      "name": "Game Control player manoeuvres launcher",
       "passed": true
     },
     {

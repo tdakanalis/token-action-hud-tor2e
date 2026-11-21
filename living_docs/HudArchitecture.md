@@ -1,6 +1,6 @@
 # HUD architecture and audit
 
-This describes the implemented branch. User approval, the player guide/PDF update and release remain separate steps.
+This describes the release candidate, including the updated guide and PDF.
 
 ## Ownership of behavior
 
@@ -19,12 +19,34 @@ This describes the implemented branch. User approval, the player guide/PDF updat
 | Combat tasks | Accessible owned/world Items are filtered by current native stance. Announce the task's native card, then call its associated skill. No consequence automation. | Native task card and roll; dispatch and access checks. |
 | Community, travel and songs | Use selected Community or the character's active membership. Expose member summaries and own assigned-role rolls. Avoid duplicate character role launchers; hide group roles in solo mode. Song use and performance remain native. | Community builds/sheet, role dialog, native song used toggle, membership/solo tests and Player restrictions. |
 | Journey, Fellowship phase and contacts | Open native journey logs, mounts, undertakings, standings and permitted actor sheets. Use the system's journey-event dialog when available. Recording remains native. | Populated document navigation; native journey-event dialog; visibility checks. |
-| Macros and optional Game Control | Show executable Macros only. Capability-gate integration calls and reserve LM methods for the GM. Hide manoeuvre launchers when Game Control would resolve a different assigned Character. | Actual Macro execution; native integration dialogs/reports; permission and capability unit checks. |
+| Macros and optional Game Control | Show executable Macros only. Offer the optional Game Control manoeuvres launcher only when it resolves the selected character. | Native Macro and manoeuvres execution. |
 | Menus, header and refresh | Native context menus work by right-click or Shift+F10, with no dots in the final design. Opt skill diamonds into pointer events. Keep the originating group visible and opaque during a menu. Refresh for system/document changes without reacting to Core's own layout flags. | Actual mouse right-click, no-dots assertion, menu pointer-leave regression, native rank changes and rendered header. |
+
+## Player visibility and permissions
+
+| HUD area | Player access |
+| --- | --- |
+| Character actions | Players can roll on actors they own. The HUD skill-edit setting controls rank changes and Favoured and Magical toggles. Foundry document visibility governs sheet links and summaries. |
+| Company | Players need Observer access or ownership and the selected hero must belong to the company. Members and contacts require permission to view the linked actor. Players see exact Endurance and Hope for owned characters, with optional sharing for other visible members. |
+| Health statuses | The HUD world setting controls menu actions, context commands, condition warnings and header badges. Status changes require actor ownership. |
+| Effects | The HUD world setting controls token effects and active-effect actions. Effect changes require ownership. The overlay setting changes token presentation. |
+| Bulk conditions | Bulk health and token effect actions are Loremaster only. |
+| Eye Awareness | Players need a visible company, the HUD setting enabled and TOR2E’s Loremaster-only setting disabled when available. |
+| Combat and journey administration | Combat membership, engagement management and journey-event rolling are Loremaster controls. |
+| Hope recovery and songs | Direct recovery requires ownership of the hero and company. If company ownership blocks native rest, the button tells the player to ask the Loremaster. Song use toggles require company ownership. Player performances use the assigned, owned company member. |
+| Macros | Foundry’s macro execution permission determines visibility and execution. |
 
 ## Appearance
 
-The user requested a compact HUD and subsequently rejected added menu backgrounds. Panels have no added enclosing fill or shadow; stat badges have no fill. Controls use the current Core theme with lighter borders, restrained state accents, smaller icons, keyboard focus and reduced-motion support. The original Core theme remains responsible for its own backgrounds, including deliberately chosen light/high-contrast styles.
+The user requested a compact HUD and subsequently rejected added menu backgrounds. Panels have no added enclosing fill or shadow; stat badges have no fill. Default dark/docked controls use charcoal, neutral light text and a unified gold accent in place of beige metadata and bronze accents. Active actions use a subtle gold-tinted dark fill, one thin gold outline and a gold checkmark, with no extra bottom border or inset shadow. This treatment remains visible on hover. Explicit light/high-contrast/custom choices keep their Core palette. A render-time palette attribute follows Core's current style setting, since Core can retain old theme classes while switching.
+
+The final direction is independent of the character sheet. The user cancelled the proposed global vertical-footprint reduction; row padding and icon slot sizes retain their prior dimensions. A later focused request tightens section-heading margins and removes duplicate padding between headings and their actions. Existing category hover behavior is unchanged; the attempted click-to-open change was reverted. Travel assignments wrap in narrow panels instead of clipping character names.
+
+Group images are actual image elements and use fixed slots with `object-fit: contain`; action background images use contained sizing. This preserves the Stats portrait's 300×450 proportions instead of stretching it into a square. Active toggles have a checkmark and `aria-pressed`, disabled labels keep readable opacity, map-area headings have a dark text shadow, and focus indicators have a contrasting surround. The appearance receipt records rendered color samples and Python-calculated contrast checks for text, active marks, menus and focus. See testing/README.md for scope and reproduction.
+
+The final polish pass separates medium-weight action labels from regular-weight gold metadata, aligns labels consistently after their icons, and gives header resource values their own gold spans. Category and section headings remain white and retain the requested tighter heading spacing. Company member names occupy a full line above their resource values to avoid narrow-column clipping. Existing icon sizes, row padding, Core layout preferences and hover behavior are preserved.
+
+Floating Community opens rightward from Core’s anchor with a maximum width of 360 pixels. Its actions wrap to one column when space is limited. It uses the standard thin neutral scrollbar.
 
 ## Known boundaries
 
@@ -32,6 +54,6 @@ The user requested a compact HUD and subsequently rejected added menu background
 - Core 2.0 does not expose the newer context menu hook. Existing modifier controls remain available; new menu enhancements are capability-gated.
 - The upstream Hope bug remains on the native sheet. HUD users without Community ownership must ask the Loremaster to rest/recover through the HUD; changing that system behavior was explicitly excluded.
 - Active flags, document fields and display summaries do not constitute automation of descriptive abilities, combat task consequences or journey-log recording.
-- The user guide is unchanged pending approval. This branch must not be merged to `main` before that step: the existing main-branch workflow publishes releases automatically.
+- The user guide and PDF are updated for this release. Merging to `main` triggers the existing GitHub and Foundry package release workflow.
 
 See [developer validation](../testing/README.md) and `testing/results` for commands and individual results. No licensed Foundry files or campaign data are included.

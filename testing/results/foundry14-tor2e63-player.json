@@ -25,6 +25,10 @@
       "passed": true
     },
     {
+      "name": "Player settings gate health, effects and Eye Awareness",
+      "passed": true
+    },
+    {
       "name": "Observer Community has no song edit command",
       "passed": true
     },
