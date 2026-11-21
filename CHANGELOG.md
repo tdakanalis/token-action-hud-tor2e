@@ -1,3 +1,21 @@
+# [1.7.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.6.1...v1.7.0) (2026-11-21)
+
+
+### Bug Fixes
+
+* **community:** align compact menus and travel cards ([e532194](https://github.com/tdakanalis/token-action-hud-tor2e/commit/e5321945dd19476a2eb7c42b42926c2b68bdb5e4))
+* **community:** remove optional Loremaster launchers ([e3390f2](https://github.com/tdakanalis/token-action-hud-tor2e/commit/e3390f27b13e55f6acb240d33e5cdd075a26bd7f))
+* **community:** simplify Fellowship shortcuts ([5c244fb](https://github.com/tdakanalis/token-action-hud-tor2e/commit/5c244fbe97d2b62d790a9ac2462636e42fb7b5cc))
+* **permissions:** enforce player visibility and Loremaster bulk access ([37ffac4](https://github.com/tdakanalis/token-action-hud-tor2e/commit/37ffac4cd4d3db741386190f709dcf2e42a8ebb3))
+* **rest:** explain when the Loremaster is required ([62bc1f6](https://github.com/tdakanalis/token-action-hud-tor2e/commit/62bc1f6d466d97e5af46341ecee18be17f33b1c0))
+
+
+### Features
+
+* **community:** show song types inline ([165bc94](https://github.com/tdakanalis/token-action-hud-tor2e/commit/165bc94cd9d204352b8c2ba0161aebc0bfbaf8d0))
+* expand TOR2E HUD controls and streamline interaction ([15c09c3](https://github.com/tdakanalis/token-action-hud-tor2e/commit/15c09c30aa698e1f15ccb1a8f928eda7be8e78f7))
+* **settings:** control skill edits and company resource sharing ([10a544f](https://github.com/tdakanalis/token-action-hud-tor2e/commit/10a544ff687ec461de55c596da957d55db779403))
+
 ## [1.6.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.6.0...v1.6.1) (2026-11-21)
 
 
