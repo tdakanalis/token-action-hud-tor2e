@@ -17,8 +17,12 @@ export function communityFor(actor) {
 
 // Native rest also opens Hope recovery. Check both documents before entering
 // that flow; the system currently updates Hope before spending Fellowship.
+export function canRecoverHope(actor, community) {
+    return Boolean(actor?.isOwner && (!community || community.isOwner));
+}
+
 export function checkHopeRecoveryPermission(actor, community) {
-    if (actor?.isOwner && (!community || community.isOwner)) return true;
+    if (canRecoverHope(actor, community)) return true;
     ui.notifications.warn(label('actions.hopeRecoveryPermission'));
     return false;
 }

@@ -5,12 +5,13 @@ import {
     generateDiamonds,
     getActiveStatusIds,
     getControlledTokens,
+    getCurrentCommunity,
     getImage,
     getTargetedTokens,
     isAllowedForUser
 } from "./utils.js";
 import {getGroup, SKILLS} from "./constants.js";
-import {canView, communityFor, label, loadFeatures} from './features.js';
+import {canRecoverHope, canView, communityFor, label, loadFeatures} from './features.js';
 
 import {Tor2eTokenHudExtension} from "/systems/tor2e/modules/hud/Tor2eTokenHudExtension.js";
 
@@ -535,17 +536,22 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
         async _loadRest() {
             if (this.actor.type === 'character') {
+                const availability = canRecoverHope(this.actor, getCurrentCommunity()) ? {cssClass: 'rest'} : {
+                    cssClass: 'rest disabled tor2e-rest-blocked',
+                    info1: {text: label('actions.restBlocked')},
+                    tooltip: label('actions.hopeRecoveryPermission')
+                };
                 this.addActions([
                     {
+                        ...availability,
                         id: 'shortRest',
-                        cssClass: "rest",
                         img: 'systems/tor2e/assets/images/icons/rest/campfire.svg',
                         name: coreModule.api.Utils.i18n('tor2e.sheet.actions.rest.short.label'),
                         encodedValue: ['rest', 'character', 'short'].join(this.delimiter),
                     },
                     {
+                        ...availability,
                         id: 'longRest',
-                        cssClass: "rest",
                         img: 'systems/tor2e/assets/images/icons/rest/person-in-bed.svg',
                         name: coreModule.api.Utils.i18n('tor2e.sheet.actions.rest.prolonged.label'),
                         encodedValue: ['rest', 'character', 'prolonged'].join(this.delimiter),

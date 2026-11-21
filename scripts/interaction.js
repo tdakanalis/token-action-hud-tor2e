@@ -119,6 +119,9 @@ export function registerInteractions() {
         for (const button of root?.querySelectorAll('.tor2e-action.toggle') ?? []) {
             button.setAttribute('aria-pressed', String(button.classList.contains('active')));
         }
+        for (const button of root?.querySelectorAll('.tor2e-rest-blocked') ?? []) {
+            button.setAttribute('aria-disabled', 'true');
+        }
         for (const button of root?.querySelectorAll('.tor2e-action[data-has-context-menu="true"]') ?? []) {
             if (enhancedButtons.has(button)) continue;
             enhancedButtons.add(button);

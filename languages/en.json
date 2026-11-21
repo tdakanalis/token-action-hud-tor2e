@@ -82,6 +82,7 @@
           "miserable": "Review Miserable condition"
         },
         "hopeRecoveryPermission": "Rest and Hope recovery require ownership of your character and the active Community. Ask the Loremaster to perform this action; the system cannot safely spend Fellowship Points with your current permissions.",
+        "restBlocked": "Ask the Loremaster",
         "failed": "The action could not be completed. Check the notification or console for details.",
         "rollHint": "Click to open the system roll dialog. Right-click for secondary actions; keyboard: Shift+F10.",
         "rollOnlyHint": "Click to open the system roll dialog.",
