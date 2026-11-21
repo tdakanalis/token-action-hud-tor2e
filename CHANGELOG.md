@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.7.1...v1.7.2) (2026-11-21)
+
+
+### Bug Fixes
+
+* **hud:** deduplicate combat tasks and trim redundant shortcuts ([0720134](https://github.com/tdakanalis/token-action-hud-tor2e/commit/07201345117248d4b25cdc054f4e6a75e0dede49))
+
 ## [1.7.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.7.0...v1.7.1) (2026-11-21)
 
 
