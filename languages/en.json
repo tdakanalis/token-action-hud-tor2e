@@ -18,6 +18,14 @@
         "addOverlayOnEffects": {
           "title": "Enable token overlay for effect statuses",
           "description": "Enable this option to apply a token overlay when applying effect statuses such as Dead, Unconscious, and Invisible."
+        },
+        "shareCompanyResourceTotals": {
+          "title": "Share company resource totals",
+          "description": "Show Endurance and Hope totals for company members whose sheets players can view. When disabled, players see totals only for characters they own."
+        },
+        "allowPlayerCharacterEdits": {
+          "title": "Allow player skill edits from the HUD",
+          "description": "Allow players to change skill and combat proficiency ranks and toggle Favoured or Magical on characters they own. Players can still roll when edits are disabled."
         }
       },
       "groups": {
@@ -76,6 +84,7 @@
         "hopeRecoveryPermission": "Rest and Hope recovery require ownership of your character and the active Community. Ask the Loremaster to perform this action; the system cannot safely spend Fellowship Points with your current permissions.",
         "failed": "The action could not be completed. Check the notification or console for details.",
         "rollHint": "Click to open the system roll dialog. Right-click for secondary actions; keyboard: Shift+F10.",
+        "rollOnlyHint": "Click to open the system roll dialog.",
         "resourceHint": "Click to open the system's controls for this value."
       },
       "combat": {

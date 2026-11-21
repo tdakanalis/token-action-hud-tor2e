@@ -1,4 +1,5 @@
 import {
+    canEditSkills,
     canSeeEyeAwareness,
     capitalizeFirstLetter,
     generateDiamonds,
@@ -23,13 +24,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const contextMenus = Number(game.modules.get('token-action-hud-core')?.version?.split('.')[1] ?? 0) >= 1;
             return super.addActions(actions.map(action => {
                 const [type, command, id] = action.encodedValue?.split(this.delimiter) ?? [];
-                const ordinaryMenu = ['weapon', 'armour', 'skill', 'song', 'traits', 'miscellaneous', 'health', 'effect'].includes(type)
-                    || (type === 'proficiency' && id !== 'brawling');
+                const canEditRank = (type === 'skill' || (type === 'proficiency' && id !== 'brawling')) && canEditSkills(this.actor);
+                const ordinaryMenu = ['weapon', 'armour', 'song', 'traits', 'miscellaneous', 'health', 'effect'].includes(type)
+                    || canEditRank || (type === 'skill' && command === 'npc');
                 const documentMenu = type === 'hud' && (command === 'task' || command === 'roleRoll'
                     || (command === 'sheet' && (id?.includes('.Item.') || id?.startsWith('Item.') || id?.includes('.ActiveEffect.'))));
                 const hasContextMenu = contextMenus && (ordinaryMenu || documentMenu);
                 const hint = ['skill', 'weapon', 'stature', 'proficiency', 'combatAttribute'].includes(type)
-                    ? label('actions.rollHint') : ['resource', 'attribute', 'advancement'].includes(type)
+                    ? label(hasContextMenu ? 'actions.rollHint' : 'actions.rollOnlyHint') : ['resource', 'attribute', 'advancement'].includes(type)
                         ? label('actions.resourceHint') : undefined;
                 const info = Object.fromEntries(['info1', 'info2', 'info3'].map(key => [key,
                     action[key] && typeof action[key].text === 'number' ? {...action[key], text: String(action[key].text)} : action[key]
@@ -38,7 +40,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     ...info,
                     tooltip: action.tooltip || hint,
                     cssClass: `tor2e-action ${action.cssClass ?? ''}`,
-                    info1: ['skill', 'proficiency'].includes(type) ? {...info.info1, title: label('actions.rankHint')} : info.info1,
+                    info1: canEditRank ? {...info.info1, title: label('actions.rankHint')} : info.info1,
                     hasContextMenu
                 };
             }), group);

@@ -74,6 +74,22 @@ export function getSettings(coreModule) {
             type: Boolean,
             default: false
         },
+        shareCompanyResourceTotals: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.shareCompanyResourceTotals.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.shareCompanyResourceTotals.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: false
+        },
+        allowPlayerCharacterEdits: {
+            name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.allowPlayerCharacterEdits.title'),
+            hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.allowPlayerCharacterEdits.description'),
+            scope: 'world',
+            config: true,
+            type: Boolean,
+            default: true
+        },
         addOverlayOnEffects: {
             name: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.title'),
             hint: coreModule.api.Utils.i18n('tokenActionHud.tor2e.settings.addOverlayOnEffects.description'),

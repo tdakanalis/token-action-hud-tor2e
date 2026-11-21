@@ -143,10 +143,11 @@ export async function loadFeatures(handler) {
         for (const member of community.system.members ?? []) {
             const character = game.actors.get(member.id);
             if (!canView(character)) continue;
-            add(membersGroup, member.id, character.name, 'sheet', [character.uuid], {img: character.img,
+            const totals = character.isOwner || isAllowedForUser('shareCompanyResourceTotals') ? {
                 info1: {text: `${character.extendedData?.getEndurance?.() ?? ''}/${character.system.resources?.endurance?.max ?? ''}`},
                 info2: {text: `${character.extendedData?.getHopePoint?.() ?? ''}/${character.system.resources?.hope?.max ?? ''}`}
-            });
+            } : {};
+            add(membersGroup, member.id, character.name, 'sheet', [character.uuid], {img: character.img, ...totals});
         }
         // Characters already have the assigned-role controls in the Travel group.
         if (actor?.type === 'community' && !game.settings.get('tor2e', 'soloMode')) {

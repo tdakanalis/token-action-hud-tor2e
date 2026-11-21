@@ -3,7 +3,7 @@ import {tor2eUtilities} from "/systems/tor2e/modules/utilities.js";
 import Tor2eSong from "/systems/tor2e/modules/song.js";
 import {Tor2eStance} from "/systems/tor2e/modules/combat/Tor2eStance.js";
 import {canView, checkHopeRecoveryPermission, communityFor, handleFeatureAction, openSystemSheet, shareSystemItem} from './features.js';
-import {canSeeEyeAwareness, getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens, isAllowedForUser} from "./utils.js";
+import {canEditSkills, canSeeEyeAwareness, getControlledTokens, getCurrentCommunity, getSetting, getTargetedTokens, isAllowedForUser} from "./utils.js";
 
 export let TOR2ERollHandler = null
 
@@ -363,7 +363,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleFavouredSkill(typeActor, skillId) {
-            if (this.actor?.isOwner === false) return;
+            if (!canEditSkills(this.actor)) return;
             if (typeActor === 'character') {
                 const skill = this.actor.system.commonSkills[skillId];
                 if (!skill) return;
@@ -391,7 +391,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _changeSkillRank(typeActor, skillId, direction, typeAction = 'skill') {
-            if (this.actor?.isOwner === false || ![-1, 1].includes(direction)) return;
+            if (!canEditSkills(this.actor) || ![-1, 1].includes(direction)) return;
             const item = typeActor === 'npc' ? this.actor.items.get(skillId) : null;
             const skills = typeAction === 'proficiency' ? this.actor.system.combatProficiencies : this.actor.system.commonSkills;
             const skill = typeActor === 'npc' ? item?.system : skills?.[skillId];
@@ -411,8 +411,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         async _toggleMagicalSkill(skillId) {
+            if (!canEditSkills(this.actor)) return;
             const skill = this.actor?.system.commonSkills?.[skillId];
-            if (!this.actor?.isOwner || !skill) return;
+            if (!skill) return;
             await tor2eUtilities.eventsProcessing.onSkillName.call({actor: this.actor}, {}, {
                 ctrlKey: true, preventDefault() {}, currentTarget: {dataset: {
                     actionMagicalValue: String(skill.magical?.value === true),

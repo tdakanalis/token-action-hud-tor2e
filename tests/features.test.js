@@ -39,6 +39,36 @@ test('a character outside the active company does not receive its controls', () 
     assert.equal(communityFor({id: 'outsider'}), null);
 });
 
+test('sharing company totals reveals only resources of members players can view', async () => {
+    setup();
+    game.user.isGM = false;
+    let share = false;
+    game.settings.get = (_, key) => key === 'shareCompanyResourceTotals' && share;
+    const members = ['owned', 'observer', 'private'].map(id => ({
+        id, name: id, uuid: 'Actor.' + id, isOwner: id === 'owned',
+        testUserPermission: () => id === 'observer',
+        system: {resources: {endurance: {max: 25}, hope: {max: 10}}},
+        extendedData: {getEndurance: () => 16, getHopePoint: () => 6}
+    }));
+    game.actors = new Map(members.map(actor => [actor.id, actor]));
+    game.tor2e.macro.utility.getCommunity = () => ({
+        type: 'community', testUserPermission: () => true, system: {members}, items: []
+    });
+    const actions = [];
+    const handler = {
+        delimiter: '|', GROUP: {community: {id: 'community'}},
+        addGroup() {}, addActions: values => actions.push(...values)
+    };
+    await loadFeatures(handler);
+    assert.deepEqual(actions.map(action => [action.name, action.info1?.text, action.info2?.text]),
+        [['owned', '16/25', '6/10'], ['observer', undefined, undefined]]);
+    share = true;
+    actions.length = 0;
+    await loadFeatures(handler);
+    assert.deepEqual(actions.map(action => [action.name, action.info1?.text, action.info2?.text]),
+        [['owned', '16/25', '6/10'], ['observer', '16/25', '6/10']]);
+});
+
 test('journey-role rolls delegate to the assigned actor rather than the selected company', async () => {
     setup();
     const actor = {id: 'hero', uuid: 'Actor.hero', isOwner: true};

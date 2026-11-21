@@ -50,6 +50,10 @@ export function canSeeEyeAwareness() {
         || !game.settings.get('tor2e', 'eyeAwarenessLoremasterOnly');
 }
 
+export function canEditSkills(actor) {
+    return Boolean(actor && (game.user.isGM || actor.isOwner) && isAllowedForUser('allowPlayerCharacterEdits'));
+}
+
 export function getCurrentCommunity() {
     // Delegates to the system so the "current community" setting stays a single
     // source of truth; the type guard covers the setting pointing at a stale id.

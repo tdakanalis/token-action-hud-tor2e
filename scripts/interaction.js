@@ -1,6 +1,6 @@
 import {MODULE_ID} from './constants.js';
 import {canView, communityFor, label, openSystemSheet, shareSystemItem} from './features.js';
-import {canSeeEyeAwareness, getSetting, isAllowedForUser} from './utils.js';
+import {canEditSkills, canSeeEyeAwareness, getSetting, isAllowedForUser} from './utils.js';
 
 const enhancedButtons = new WeakSet();
 const sizedCommunityGroups = new WeakSet();
@@ -42,12 +42,12 @@ export function registerInteractions() {
             menu(command, c => ['weapon', 'armour'].includes(c.type) && c.actor?.type === 'character' && c.item?.isOwner,
                 c => manager.rollHandler._setItemStatus(c.item.id, 'system.equipped.value', equipped, 'system.dropped.value', dropped));
         }
-        menu('toggleFavoured', c => c.type === 'skill' && c.actor?.isOwner,
+        menu('toggleFavoured', c => c.type === 'skill' && canEditSkills(c.actor),
             c => manager.rollHandler._toggleFavouredSkill(c.actorType, c.itemId), 'fa-solid fa-star');
-        menu('toggleMagical', c => c.type === 'skill' && c.actor?.type === 'character' && c.actor.isOwner,
+        menu('toggleMagical', c => c.type === 'skill' && c.actor?.type === 'character' && canEditSkills(c.actor),
             c => manager.rollHandler._toggleMagicalSkill(c.itemId), 'fa-solid fa-wand-magic-sparkles');
         for (const [name, direction] of [['increaseRank', 1], ['decreaseRank', -1]]) {
-            menu(name, c => c.actor?.isOwner && (c.type === 'skill' || (c.type === 'proficiency' && c.key !== 'brawling')),
+            menu(name, c => canEditSkills(c.actor) && (c.type === 'skill' || (c.type === 'proficiency' && c.key !== 'brawling')),
                 c => manager.rollHandler._changeSkillRank(c.actorType, c.type === 'skill' ? c.itemId : c.key, direction, c.type),
                 direction > 0 ? 'fa-solid fa-plus' : 'fa-solid fa-minus');
         }
