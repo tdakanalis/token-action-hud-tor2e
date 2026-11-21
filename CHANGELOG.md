@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.6.0...v1.6.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* prevent HUD crash when weapon proficiency is missing ([eae61b4](https://github.com/tdakanalis/token-action-hud-tor2e/commit/eae61b4ce3e5ca84e8d96d85ad9af43ea700ae07))
+
 # [1.6.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.5.2...v1.6.0) (2026-08-18)
 
 
