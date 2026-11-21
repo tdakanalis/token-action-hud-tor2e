@@ -679,30 +679,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return;
             }
             const songs = community.items.filter(item => item.type === 'song');
-            songs.forEach(song => {
-                // Songs are grouped the way the community sheet groups them, by the
-                // song's own group value mapped through CONFIG.tor2e.songGroups.
-                const groupValue = song.system?.group?.value;
-                const groupLabel = CONFIG.tor2e?.songGroups?.[groupValue];
-                const group = {
-                    id: 'songs_' + (groupValue || 'songs'),
-                    name: groupLabel
-                        ? coreModule.api.Utils.i18n(groupLabel)
-                        : coreModule.api.Utils.i18n('tor2e.actors.sections.songs')
-                };
-
-                this.addGroup(group, {id: this.GROUP.songs.id}, true);
-
+            const actions = songs.map(song => {
+                const typeLabel = CONFIG.tor2e?.songGroups?.[song.system?.group?.value];
                 const used = song.system?.used?.value === true;
-                this.addActions([{
+                return {
                     id: song.id,
                     cssClass: used ? "song toggle active" : "song toggle",
                     name: song.name,
                     img: getImage(song, ["systems/tor2e/assets/images/icons/default.webp"]),
-                    tooltip: song.system?.description?.value,
+                    tooltip: song.isOwner ? song.system?.description?.value : undefined,
                     encodedValue: ['song', this.actor.type, song.id].join(this.delimiter),
-                }], group);
+                    info1: {class: "hud-info", text: typeLabel ? coreModule.api.Utils.i18n(typeLabel) : ''},
+                };
             });
+            if (actions.length) this.addActions(actions, this.GROUP.songs);
         }
         async _loadTravel(community) {
             if (this.actor.type === 'character' && !game.settings.get('tor2e', 'soloMode')) {
