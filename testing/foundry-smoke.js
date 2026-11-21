@@ -214,35 +214,14 @@ export async function runSmokeTests() {
         await handleFeatureAction(rollHandler(hero), 'clearTargets', []);
         check(game.user.targets.size === 0, 'Targets did not clear.');
     });
-    for (const method of ['macro_des_conseilActionProlongee', 'macro_combat_manoeuvres',
-        'macro_communaute_synthesePj', 'macro_communaute_ajouteprogression']) {
-        await record('Game Control native launcher: ' + method, async () => {
-            const {handleFeatureAction} = await import('../scripts/features.js');
-            check(typeof game.Tor2eGameControl?.[method] === 'function', 'Integration not installed.');
-            canvas.tokens.releaseAll();
-            heroToken.control({releaseOthers: true});
-            await cancelDialog('DialogV2', () => handleFeatureAction(rollHandler(hero), 'integration', [method]));
-        });
-    }
-    for (const method of ['macro_sante_rapportSantePhysique', 'macro_sante_rapportSanteMentale', 'macro_communaute_rapportExperience']) {
-        await record('Game Control native chat report: ' + method, async () => {
-            const {handleFeatureAction} = await import('../scripts/features.js');
-            let hook;
-            let timer;
-            const posted = new Promise((resolve, reject) => {
-                hook = Hooks.once('createChatMessage', resolve);
-                timer = setTimeout(() => reject(new Error('Native report was not posted.')), 10000);
-            });
-            try {
-                await handleFeatureAction(rollHandler(hero), 'integration', [method]);
-                const message = await posted;
-                const report = document.createElement('div');
-                report.innerHTML = message.content;
-                // Game Control intentionally abbreviates names in text reports.
-                check(report.querySelectorAll('tbody tr').length >= 1, 'Company member row missing from native report.');
-            } finally {Hooks.off('createChatMessage', hook); clearTimeout(timer);}
-        });
-    }
+    await record('Game Control player manoeuvres launcher', async () => {
+        const {handleFeatureAction} = await import('../scripts/features.js');
+        const method = 'macro_combat_manoeuvres';
+        check(typeof game.Tor2eGameControl?.[method] === 'function', 'Integration not installed.');
+        canvas.tokens.releaseAll();
+        heroToken.control({releaseOthers: true});
+        await cancelDialog('DialogV2', () => handleFeatureAction(rollHandler(hero), 'integration', [method]));
+    });
     await record('Native Fellowship Hope recovery dialog', async () => {
         const {handleFeatureAction} = await import('../scripts/features.js');
         const community = game.actors.find(actor => actor.type === 'community');

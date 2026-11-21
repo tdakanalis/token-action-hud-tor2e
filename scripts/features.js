@@ -41,19 +41,6 @@ export async function openSystemSheet(document, tab, field) {
     input?.focus();
 }
 
-export function integrationActions() {
-    const api = game.modules.get('tor-2e-gamecontrol')?.active && game.Tor2eGameControl;
-    if (!api || !game.user.isGM) return [];
-    return [
-        ['council', 'macro_des_conseilActionProlongee'],
-        ['companyReport', 'macro_communaute_synthesePj'],
-        ['physicalReport', 'macro_sante_rapportSantePhysique'],
-        ['mentalReport', 'macro_sante_rapportSanteMentale'],
-        ['experienceReport', 'macro_communaute_rapportExperience'],
-        ['awardExperience', 'macro_communaute_ajouteprogression']
-    ].filter(([, method]) => typeof api[method] === 'function');
-}
-
 // These are navigation and dispatch controls. TOR2E retains ownership of game rules.
 export async function loadFeatures(handler) {
     const actor = handler.actor;
@@ -194,11 +181,6 @@ export async function loadFeatures(handler) {
             if (canView(document)) add(group, contact.id, document.name, 'sheet', [document.uuid], {img: document.img});
         }
     }
-    const integrations = integrationActions();
-    if (integrations.length) {
-        const group = addGroup('integrations', 'community');
-        for (const [name, method] of integrations) add(group, name, label('actions.' + name), 'integration', [method]);
-    }
 }
 
 export async function handleFeatureAction(handler, command, args) {
@@ -259,10 +241,8 @@ export async function handleFeatureAction(handler, command, args) {
         }
     }
     if (command === 'integration') {
-        const allowed = new Set(integrationActions().map(([, method]) => method));
-        if (handler.actor?.type === 'character' && handler.actor.isOwner
-            && (!game.user.character || game.user.character.id === handler.actor.id)) allowed.add('macro_combat_manoeuvres');
-        if (allowed.has(id) && game.modules.get('tor-2e-gamecontrol')?.active && typeof game.Tor2eGameControl?.[id] === 'function') {
+        if (id === 'macro_combat_manoeuvres' && handler.actor?.type === 'character' && handler.actor.isOwner
+            && (!game.user.character || game.user.character.id === handler.actor.id) && game.modules.get('tor-2e-gamecontrol')?.active && typeof game.Tor2eGameControl?.[id] === 'function') {
             return game.Tor2eGameControl[id]();
         }
     }

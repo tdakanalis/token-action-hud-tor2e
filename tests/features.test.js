@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {registerHooks} from 'node:module';
-import {canView, communityFor, handleFeatureAction, integrationActions, loadFeatures} from '../scripts/features.js';
+import {canView, communityFor, handleFeatureAction, loadFeatures} from '../scripts/features.js';
 
 registerHooks({resolve(specifier, context, nextResolve) {
     if (specifier === '/systems/tor2e/modules/chat/Tor2eChatMessage.js') return {
@@ -76,22 +76,11 @@ test('explicit group conditions use system add/remove methods and deduplicate ac
     assert.deepEqual(calls, [['add', 'miserable'], ['remove', 'miserable']]);
 });
 
-test('players cannot call Loremaster integrations through crafted action values', async () => {
+test('the HUD does not dispatch Game Control Loremaster tools, even for GMs', async () => {
     setup();
     game.modules.set('tor-2e-gamecontrol', {active: true});
-    game.Tor2eGameControl = {macro_communaute_ajouteprogression: () => assert.fail('not allowed')};
-    game.user.isGM = false;
+    game.Tor2eGameControl = {macro_communaute_ajouteprogression: () => assert.fail('not a HUD action')};
     await handleFeatureAction({actor: {isOwner: true, type: 'character'}}, 'integration', ['macro_communaute_ajouteprogression']);
-    assert.deepEqual(integrationActions(), []);
-});
-
-test('integration launchers are absent unless both module and operation exist', () => {
-    setup();
-    game.modules.set('tor-2e-gamecontrol', {active: true});
-    game.Tor2eGameControl = {macro_communaute_synthesePj: () => {}};
-    assert.deepEqual(integrationActions(), [['companyReport', 'macro_communaute_synthesePj']]);
-    game.modules.set('tor-2e-gamecontrol', {active: false});
-    assert.deepEqual(integrationActions(), []);
 });
 
 test('target controls cannot target invisible tokens', async () => {
