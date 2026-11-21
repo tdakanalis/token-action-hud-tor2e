@@ -2,6 +2,7 @@ import {label, openSystemSheet, shareSystemItem} from './features.js';
 import {getCurrentCommunity, getSetting, isAllowedForUser} from './utils.js';
 
 const enhancedButtons = new WeakSet();
+const sizedCommunityGroups = new WeakSet();
 
 function actionContext(target, manager) {
     const element = target?.[0] ?? target;
@@ -93,6 +94,22 @@ export function registerInteractions() {
             const style = app.setting?.style ?? game.settings.get('token-action-hud-core', 'style');
             root.dataset.tor2ePalette = ['foundryVTT', 'compact', 'dockedLeft', 'dockedRight', 'dockedCenterRight'].includes(style)
                 ? 'earth' : 'core';
+        }
+        const communityButton = root?.querySelector('.tah-group-button[value="community"]');
+        const communityGroup = communityButton?.closest('.tah-tab-group');
+        if (communityGroup && !sizedCommunityGroups.has(communityGroup)) {
+            sizedCommunityGroups.add(communityGroup);
+            const sizeCommunity = () => {
+                communityGroup.classList.toggle('tor2e-community-wide', !app.isDocked);
+                if (app.isDocked) return;
+                const rect = communityButton.getBoundingClientRect();
+                const scale = rect.width / communityButton.offsetWidth || 1;
+                const available = (document.documentElement.clientWidth - rect.left - 16) / scale;
+                communityGroup.style.setProperty('--tor2e-community-width', `${Math.max(0, available)}px`);
+            };
+            sizeCommunity();
+            communityGroup.addEventListener('pointerenter', sizeCommunity, {capture: true});
+            communityGroup.addEventListener('focusin', sizeCommunity);
         }
         for (const button of root?.querySelectorAll('.tor2e-action.toggle') ?? []) {
             button.setAttribute('aria-pressed', String(button.classList.contains('active')));

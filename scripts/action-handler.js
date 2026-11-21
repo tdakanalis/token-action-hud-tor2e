@@ -713,11 +713,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     "scouts": "explore",
                     "lookouts": "awareness",
                 };
-                Object.keys(travel).forEach(role => {
-                    const players = role === 'guide' ? [travel[role]] : travel[role];
+                Object.keys(labels).forEach(role => {
+                    const players = role === 'guide' ? [travel[role]] : travel[role] ?? [];
                     const playerNames = players.map(p => p?.name).join(', ');
                     const playerIds = players.map(p => p?.id);
-                    const skill = coreModule.api.Utils.i18n('tor2e.travel.roles.' + role + '.skill');
+                    const skill = coreModule.api.Utils.i18n('tor2e.commonSkills.' + labels[role]);
                     const active = playerIds.includes(this.actor.id);
                     this.addActions([{
                         id: role,
