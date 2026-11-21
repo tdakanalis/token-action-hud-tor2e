@@ -54,7 +54,6 @@
       },
       "actions": {
         "toggleMagical": "Toggle magical skill",
-        "openActor": "Open actor sheet",
         "recoverHope": "Recover Hope from Fellowship",
         "journeyEvent": "Roll journey event",
         "journeyEventHint": "Open the system's journey event roll. Use the journey log sheet to record events.",
@@ -78,7 +77,6 @@
         "remove": "Remove",
         "conditionWarning": "The system reports a condition threshold. Open the sheet to review and apply the appropriate condition.",
         "check": {
-          "weary": "Review Weary condition",
           "miserable": "Review Miserable condition"
         },
         "hopeRecoveryPermission": "Rest and Hope recovery require ownership of your character and the active Community. Ask the Loremaster to perform this action; the system cannot safely spend Fellowship Points with your current permissions.",

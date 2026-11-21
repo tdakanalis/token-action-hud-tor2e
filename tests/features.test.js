@@ -94,6 +94,33 @@ test('combat tasks use system skill rolls', async () => {
     assert.equal(selected, actor);
 });
 
+test('combat tasks prefer the actor copy without losing same-name variants', async () => {
+    setup();
+    const task = (id, parent, {skill = 'awe', stance = 'forward', description = '<p>Standard task.</p>'} = {}) => ({
+        id, uuid: `${parent}Item.${id}`, name: 'Intimidate Foe', type: 'combat-task', isOwner: true,
+        system: {associatedSkill: {value: skill}, associatedStance: {value: stance}, description: {value: description}}
+    });
+    const actorCopy = task('shared-id', 'Actor.hero.');
+    const worldCopy = task('copied-id', '');
+    const worldVariant = task('shared-id', '', {description: '<p>Campaign variant.</p>'});
+    const otherSkill = task('other-skill', '', {skill: 'battle'});
+    const otherStance = task('other-stance', '', {stance: 'defensive'});
+    game.items = [worldCopy, worldVariant, otherSkill, otherStance];
+    game.modules.set('tor-2e-gamecontrol', {active: true});
+    game.Tor2eGameControl = {macro_combat_manoeuvres() {}};
+    const actor = {type: 'character', isOwner: true, items: [actorCopy]};
+    const actions = [];
+    await loadFeatures({
+        actor, delimiter: '|', GROUP: {resources: {id: 'resources'}, combat: {id: 'combat'}, community: {id: 'community'}},
+        addGroup() {}, addActions: values => actions.push(...values)
+    });
+    const tasks = actions.filter(action => action.encodedValue.startsWith('hud|task|'));
+    assert.deepEqual(tasks.map(action => action.encodedValue), [actorCopy, worldVariant, otherSkill, otherStance]
+        .map(item => 'hud|task|' + item.uuid));
+    assert.equal(new Set(tasks.map(action => action.id)).size, tasks.length);
+    assert.ok(actions.every(action => action.encodedValue !== 'hud|integration|macro_combat_manoeuvres'));
+});
+
 test('explicit group conditions use system add/remove methods and deduplicate actors', async () => {
     setup();
     const calls = [];

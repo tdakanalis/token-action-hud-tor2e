@@ -64,15 +64,10 @@ export async function loadFeatures(handler) {
     }], group);
 
     if (actor && canView(actor)) {
-        add(groups.resources, 'openActor', label('actions.openActor'), 'sheet', [actor.uuid], {img: actor.img});
-        if (actor.type === 'character' && isAllowedForUser('displayPlayerHealthEvents')) {
-            const warnings = [
-                ['weary', actor.shouldBeWeary?.()], ['miserable', actor.shouldBeMiserable?.()]
-            ];
-            for (const [status, warn] of warnings) if (warn && !actor.hasStatusEffectById?.(status)) {
-                add(groups.resources, 'check_' + status, label('actions.check.' + status), 'sheet', [actor.uuid, 'combat'],
-                    {cssClass: 'tor2e-action tor2e-warning', tooltip: label('actions.conditionWarning')});
-            }
+        if (actor.type === 'character' && isAllowedForUser('displayPlayerHealthEvents')
+            && actor.shouldBeMiserable?.() && !actor.hasStatusEffectById?.('miserable')) {
+            add(groups.resources, 'check_miserable', label('actions.check.miserable'), 'sheet', [actor.uuid, 'combat'],
+                {cssClass: 'tor2e-action tor2e-warning', tooltip: label('actions.conditionWarning')});
         }
         if (isAllowedForUser('displayPlayerEffects') && (actor.effects?.size || actor.effects?.length)) {
             const group = addGroup('activeEffects', 'misc');
@@ -91,20 +86,24 @@ export async function loadFeatures(handler) {
             const stance = combatant?.getStance?.()?.class;
             const tasks = [...actor.items, ...game.items].filter(item => item.type === 'combat-task' && canView(item));
             const seen = new Set();
+            const actionIds = new Set();
             for (const task of tasks) {
-                if (seen.has(task.uuid)) continue;
-                seen.add(task.uuid);
-                const associated = task.system.associatedStance?.value;
-                if (stance && associated && associated !== 'all' && !stance.toLowerCase().includes(associated.toLowerCase())) continue;
-                add(group, task.id, task.name, 'task', [task.uuid], {
-                    img: task.img, tooltip: task.isOwner ? task.system.description?.value : undefined, hasContextMenu: true,
-                    info1: {text: task.system.associatedSkill?.value === 'none' ? ''
-                        : game.i18n.localize('tor2e.commonSkills.' + task.system.associatedSkill?.value)}
+                const associated = task.system.associatedStance?.value?.toLowerCase() || 'all';
+                if (stance && associated !== 'all' && !stance.toLowerCase().includes(associated)) continue;
+                const skill = task.system.associatedSkill?.value || 'none';
+                const description = task.system.description?.value ?? '';
+                // The actor's copy comes first. Compare the task's rules data so
+                // same-name variants with different instructions remain available.
+                const name = task.name.trim().replace(/\s+/g, ' ').toLowerCase();
+                const signature = JSON.stringify([name, associated, skill, description.trim()]);
+                if (seen.has(signature)) continue;
+                seen.add(signature);
+                const actionId = actionIds.has(task.id) ? task.uuid : task.id;
+                actionIds.add(actionId);
+                add(group, actionId, task.name, 'task', [task.uuid], {
+                    img: task.img, tooltip: task.isOwner ? description : undefined, hasContextMenu: true,
+                    info1: {text: skill === 'none' ? '' : game.i18n.localize('tor2e.commonSkills.' + skill)}
                 });
-            }
-            if ((!game.user.character || game.user.character.id === actor.id)
-                && game.modules.get('tor-2e-gamecontrol')?.active && typeof game.Tor2eGameControl?.macro_combat_manoeuvres === 'function') {
-                add(group, 'manoeuvres', label('actions.combatTasks'), 'integration', ['macro_combat_manoeuvres']);
             }
         }
         const combatant = handler.token?.document?.findCombat?.()?.combatant ?? handler.token?.combatant;
