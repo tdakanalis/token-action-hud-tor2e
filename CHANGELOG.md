@@ -1,3 +1,10 @@
+## [1.7.3](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.7.2...v1.7.3) (2026-11-21)
+
+
+### Bug Fixes
+
+* **hud:** restore context menus after the HUD closes ([fb7f69a](https://github.com/tdakanalis/token-action-hud-tor2e/commit/fb7f69a95622ab09621ae6e50d95d43d659371b5))
+
 ## [1.7.2](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.7.1...v1.7.2) (2026-11-21)
 
 
