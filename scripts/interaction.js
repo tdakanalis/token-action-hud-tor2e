@@ -3,7 +3,7 @@ import {canView, communityFor, label, openSystemSheet, shareSystemItem} from './
 import {canEditSkills, canSeeEyeAwareness, getSetting, isAllowedForUser} from './utils.js';
 
 const enhancedButtons = new WeakSet();
-const sizedCommunityGroups = new WeakSet();
+const sizedMenuGroups = new WeakSet();
 
 function actionContext(target, manager) {
     const element = target?.[0] ?? target;
@@ -100,21 +100,21 @@ export function registerInteractions() {
             root.dataset.tor2ePalette = ['foundryVTT', 'compact', 'dockedLeft', 'dockedRight', 'dockedCenterRight'].includes(style)
                 ? 'earth' : 'core';
         }
-        const communityButton = root?.querySelector('.tah-group-button[value="community"]');
-        const communityGroup = communityButton?.closest('.tah-tab-group');
-        if (communityGroup && !sizedCommunityGroups.has(communityGroup)) {
-            sizedCommunityGroups.add(communityGroup);
-            const sizeCommunity = () => {
-                communityGroup.classList.toggle('tor2e-community-wide', !app.isDocked);
+        for (const button of root?.querySelectorAll('.tah-group-button:is([value="community"], [value="macros"])') ?? []) {
+            const group = button.closest('.tah-tab-group');
+            if (!group || sizedMenuGroups.has(group)) continue;
+            sizedMenuGroups.add(group);
+            const sizeMenu = () => {
+                group.classList.toggle('tor2e-wide-menu', !app.isDocked);
                 if (app.isDocked) return;
-                const rect = communityButton.getBoundingClientRect();
-                const scale = rect.width / communityButton.offsetWidth || 1;
+                const rect = button.getBoundingClientRect();
+                const scale = rect.width / button.offsetWidth || 1;
                 const available = (document.documentElement.clientWidth - rect.left - 16) / scale;
-                communityGroup.style.setProperty('--tor2e-community-width', `${Math.max(0, available)}px`);
+                group.style.setProperty('--tor2e-menu-width', `${Math.max(0, available)}px`);
             };
-            sizeCommunity();
-            communityGroup.addEventListener('pointerenter', sizeCommunity, {capture: true});
-            communityGroup.addEventListener('focusin', sizeCommunity);
+            sizeMenu();
+            group.addEventListener('pointerenter', sizeMenu, {capture: true});
+            group.addEventListener('focusin', sizeMenu);
         }
         for (const button of root?.querySelectorAll('.tor2e-action.toggle') ?? []) {
             button.setAttribute('aria-pressed', String(button.classList.contains('active')));
