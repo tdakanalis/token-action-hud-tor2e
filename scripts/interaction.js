@@ -87,6 +87,16 @@ export function registerInteractions() {
     Hooks.on('renderTokenActionHud', app => {
         const root = app.element instanceof HTMLElement ? app.element : app.element?.[0];
         root?.classList.add('tor2e-hud');
+        // Core can retain previous theme classes when switching styles. Use its
+        // current setting so our default palette never overrides an explicit theme.
+        if (root) {
+            const style = app.setting?.style ?? game.settings.get('token-action-hud-core', 'style');
+            root.dataset.tor2ePalette = ['foundryVTT', 'compact', 'dockedLeft', 'dockedRight', 'dockedCenterRight'].includes(style)
+                ? 'earth' : 'core';
+        }
+        for (const button of root?.querySelectorAll('.tor2e-action.toggle') ?? []) {
+            button.setAttribute('aria-pressed', String(button.classList.contains('active')));
+        }
         for (const button of root?.querySelectorAll('.tor2e-action[data-has-context-menu="true"]') ?? []) {
             if (enhancedButtons.has(button)) continue;
             enhancedButtons.add(button);
@@ -115,7 +125,13 @@ export function registerInteractions() {
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'tor2e-summary-resource';
-            button.textContent = `${name} ${value ?? 0}${max === undefined ? '' : '/' + max}`;
+            const caption = document.createElement('span');
+            caption.className = 'tor2e-summary-label';
+            caption.textContent = name;
+            const amount = document.createElement('span');
+            amount.className = 'tor2e-summary-value';
+            amount.textContent = `${value ?? 0}${max === undefined ? '' : '/' + max}`;
+            button.append(caption, document.createTextNode(' '), amount);
             button.title = label('actions.resourceHint');
             button.addEventListener('click', event => {
                 event.stopPropagation();
