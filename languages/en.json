@@ -48,7 +48,6 @@
       "actions": {
         "toggleMagical": "Toggle magical skill",
         "openActor": "Open actor sheet",
-        "openCommunity": "Open company sheet",
         "recoverHope": "Recover Hope from Fellowship",
         "journeyEvent": "Roll journey event",
         "journeyEventHint": "Open the system's journey event roll. Use the journey log sheet to record events.",

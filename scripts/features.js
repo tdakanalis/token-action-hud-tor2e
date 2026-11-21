@@ -144,9 +144,10 @@ export async function loadFeatures(handler) {
     }
 
     if (community) {
-        add(groups.fellowship, 'openCommunity', label('actions.openCommunity'), 'sheet', [community.uuid], {img: community.img});
         if (actor?.type === 'character' && actor.isOwner && community.isOwner) {
-            add(groups.fellowship, 'recoverHope', label('actions.recoverHope'), 'recoverHope', [actor.uuid, community.uuid]);
+            add(groups.fellowship, 'recoverHope', label('actions.recoverHope'), 'recoverHope', [actor.uuid, community.uuid], {
+                img: 'systems/tor2e/assets/images/icons/fellowship.webp'
+            });
         }
         const membersGroup = addGroup('members', 'community');
         for (const member of community.system.members ?? []) {
