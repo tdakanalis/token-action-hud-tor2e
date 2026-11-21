@@ -30,7 +30,7 @@
 | 4 | 4.4 | Add optional Game Control launchers | M | 🟢 done | Installed 2.1.1 council, manoeuvre, synthesis and XP dialogs plus all three native chat reports tested. GM permission and capability gates covered. |
 | 4 | 4.5 | Expose undertakings, standings and permitted contacts | M | 🟢 done | Populated native document navigation passes; contact visibility uses document permission checks. |
 | 5 | 5.1 | Complete player and Loremaster regression testing in Foundry | M | 🟢 done | Final no-dots design: 47 GM, 8 Player and 1 real right-click checks pass on Foundry 14.367 / TOR2E 6.3.0 / Core 2.1.1; 52 unit tests pass. Older matrix remains unverified. |
-| 5 | 5.2 | Prepare the final branch as a reviewable pull request | S | 🟡 working | Preparing a draft with test evidence and compatibility limits. No merge or release. |
+| 5 | 5.2 | Prepare the final branch as a reviewable pull request | S | 🟢 done | [Draft PR #6](https://github.com/tdakanalis/token-action-hud-tor2e/pull/6), implementation commit 15c09c3, includes test receipts, compatibility limits and a screenshot. No merge or release. |
 | 5 | 5.3 | Obtain approval for completed functionality and appearance | S | ⚪ not started | Required before the user-guide update. |
 | 5 | 5.4 | Update the user guide after approval | M | ⚪ not started | Update the source and PDF to match approved behavior before release. |
 | 5 | 5.5 | Record the as-built architecture and final release checks | S | 🟡 working | HudArchitecture.md and testing/README.md record boundaries and reproduction. Final release checks follow approval and guide update. |
