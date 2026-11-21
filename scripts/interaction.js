@@ -90,6 +90,13 @@ export function registerInteractions() {
             Hooks.callAll('forceUpdateTokenActionHud');
         }
     });
+    Hooks.on('closeTokenActionHud', app => {
+        // Core 2.1 can retain this flag after Foundry removes the HUD root.
+        // Let Core bind its delegated listeners to the replacement on render.
+        if (app._rootListenersAttached === true && !app.element?.isConnected) {
+            app._rootListenersAttached = false;
+        }
+    });
     Hooks.on('renderTokenActionHud', app => {
         const root = app.element instanceof HTMLElement ? app.element : app.element?.[0];
         root?.classList.add('tor2e-hud');
