@@ -1,26 +1,24 @@
 # Token Action HUD TOR2e
 
-This module adds a repositionable HUD for The One Ring 2nd Edition, giving you quick access to actions and information for any selected token or group of tokens. Perform all actions from your character, community, adversary, and NPC sheets directly through the menu, and access their information without ever opening a sheet.
+This module brings frequently used actions for The One Ring 2nd Edition into a movable Foundry HUD. Select a character, adversary, NPC, lore, or Community token to see the actions available for that actor.
 
 ![Token Action HUD](.github/readme/token-action-hud.gif)
 ![Group Effects](.github/readme/group-effects.gif)
 ![LM Combat Utils](.github/readme/lm-combat-utils.gif)
 ![Equip, Unequip, Drop](.github/readme/equip-unequip-drop.gif)
 
-# User Manual
-Read the [User Manual and Installation Guide (PDF)](https://github.com/tdakanalis/token-action-hud-tor2e/blob/main/docs/token-action-hud-tor2e-manual.pdf) for setup instructions and a full reference to every HUD action.
+## User guide
 
-# Features
-- Roll dice directly from the HUD without opening your character sheet.
-- Use items from the HUD, or right-click an item to open its sheet.
-- Equip or unequip weapons and armor with Ctrl/Alt/Shift + Click directly from the HUD.
-- Use LM utilities in the Miscellaneous menu to add or remove combatants, target or untarget tokens, and apply effects or statuses to multiple selected tokens.
-- Play your community's songs straight from the Community menu, grouped by song type.
-- Mark a skill as favoured, or a song as used, with Alt + Click.
-- See your community's Eye Awareness alongside its travel roles and Fellowship Points, hidden from players unless the Loremaster enables it.
-- Organize your macros into folders and access them easily from the Macros menu.
-- Move the HUD freely and choose whether menus expand upward or downward.
-- Unlock the HUD to customize groups and actions.
+Read the [user guide](docs/user-guide.md) or download the [PDF manual](docs/token-action-hud-tor2e-manual.pdf).
+
+## Features
+
+- Roll skills, proficiencies, attacks, Protection, Valour, and Wisdom through TOR2E.
+- Use right-click menus or Shift+F10 to manage equipment, edit permitted ranks, share items, and work with active effects.
+- See key resources and conditions in the HUD header and open their fields on the native sheet.
+- Check the company roster, roll assigned travel roles, play songs, open journey logs, and recover Hope through TOR2E.
+- As Loremaster, manage combat, engagements, journey events, and bulk conditions. Choose which player controls and resource totals to share.
+- Open available macros and use HUD Core to customize the toolbar's layout.
 
 # Required Modules
 
