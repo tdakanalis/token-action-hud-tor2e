@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.7.0...v1.7.1) (2026-11-21)
+
+
+### Bug Fixes
+
+* **hud:** widen the Macros menu like Community ([b089446](https://github.com/tdakanalis/token-action-hud-tor2e/commit/b089446027d56394b6030b2f76ad7b4d3ea668c7))
+
 # [1.7.0](https://github.com/tdakanalis/token-action-hud-tor2e/compare/v1.6.1...v1.7.0) (2026-11-21)
 
 
